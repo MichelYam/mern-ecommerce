@@ -11,6 +11,7 @@ const Index = () => {
     const { data: product, isLoading, isSuccess, isError, error } = useGetProductByIdQuery(id);
     const token = localStorage.getItem('token')
     const [updateCart] = useUpdateCartMutation()
+    console.log("product", product)
 
     let decodedToken: any = {}
     if (token !== null) {
@@ -41,7 +42,7 @@ const Index = () => {
 
     return (
         <>
-            <ProductView {...product?.products} addProductToCart={addProductToCart} />
+            <ProductView {...product} addProductToCart={addProductToCart} />
         </>
     )
 }

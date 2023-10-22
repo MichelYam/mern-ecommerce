@@ -6,11 +6,11 @@ import { TbTruckDelivery } from 'react-icons/tb'
 import { PiShoppingBagOpenDuotone } from 'react-icons/pi'
 import InputNumber from '../InputNumber'
 interface Props {
-    addProductToCart: (id?: string) => void
+    addProductToCart: (_id?: string) => void
 }
 
 type Iprops = IProduct & Props;
-const Index = ({ id, title, description, rating, price, image, category, addProductToCart }: Iprops) => {
+const Index = ({ _id, name, description, rating, price, imageUrl, category, addProductToCart }: Iprops) => {
 
     return (
         <>
@@ -27,10 +27,10 @@ const Index = ({ id, title, description, rating, price, image, category, addProd
             </ul>
             <div className='product-detailed'>
                 <div className='product-full-img'>
-                    <img src={image} alt={image} />
+                    <img src={`../assets/uploads/${imageUrl}`} alt={imageUrl} />
                 </div>
                 <div className='product-info'>
-                    <h2>{title}</h2>
+                    <h2>{name}</h2>
                     <p className='product-description'>{description}</p>
                     <div className='product-notation'>
                         <div className='product-notation-stars'>
@@ -50,7 +50,7 @@ const Index = ({ id, title, description, rating, price, image, category, addProd
                     </div>
                     <div className='product-btn'>
                         <button className='btn-medium'>Buy Now</button>
-                        <button className='btn-medium' onClick={() => addProductToCart(id)}>Add to Cart</button>
+                        <button className='btn-medium' onClick={() => addProductToCart(_id)}>Add to Cart</button>
                     </div>
                     <div className='product-delivery'>
                         <div className='flex product-delivery-option'>

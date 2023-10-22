@@ -4,12 +4,11 @@ import { getTokenFromLocalStorage } from "../utils/TokenStorage"
 // import { createProduct, deleteProduct, getMyProducts } from "./productAction"
 
 export interface IProduct {
-    products: any
     sort?: any
     map?: any
-    id?: string
-    title?: string
-    image?: string
+    _id?: string
+    name?: string
+    imageUrl?: string
     category?: string
     description?: string
     price?: string
@@ -107,12 +106,15 @@ export const productApi = createApi({
         // Product endpoints
         getProducts: builder.query<undefined, string>({
             query: () => `products`,
+            transformResponse: (response: any) => {return response.products}
         }),
         getCategories: builder.query<ICategories, any>({
             query: () => `products/categories`,
         }),
         getProductById: builder.query<IProduct, any>({
             query: (id) => `products/${id}`,
+            transformResponse: (response: any) => {return response.product}
+
         }),
         addProduct: builder.mutation({
             query: (product) => ({

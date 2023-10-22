@@ -10,8 +10,9 @@ interface IProps {
 const Index = ({ products, selectedFilter, addProductToCart }: IProps) => {
 
     const filteredData = useMemo(() => {
-        let sortedProducts = products;
-
+        let sortedProducts = [...products];
+        console.log("selectedFilter", selectedFilter)
+        console.log("sortedProducts", sortedProducts)
         if (selectedFilter === 'price') {
             sortedProducts.sort((a: any, b: any) => a.price - b.price);
         } else if (selectedFilter === 'rating') {

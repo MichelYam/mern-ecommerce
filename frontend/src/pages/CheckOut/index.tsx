@@ -47,10 +47,10 @@ const Index = () => {
             <div className='checkout-review-info flex'>
                 <div style={{ gap: "35px", alignItems: "center" }} className='flex'>
                     <div className='checkout-review-info-img'>
-                        <img src={product?.image} alt="esff" />
+                        <img src={product?.imageUrl} alt="esff" />
                     </div>
                     <div className='product-checkout-title'>
-                        <h3>{product?.title}</h3>
+                        <h3>{product?.name}</h3>
                         <p>Color: Pink</p>
                     </div>
                 </div>

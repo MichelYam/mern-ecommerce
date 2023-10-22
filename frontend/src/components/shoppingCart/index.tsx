@@ -10,8 +10,8 @@ const Index = ({ id, quantity }: Props) => {
     return (
         <>
             <li className="clearfix">
-                <img src={item?.image} alt={item?.title} />
-                <span className="item-name">{item?.title}</span>
+                <img src={item?.imageUrl} alt={item?.name} />
+                <span className="item-name">{item?.name}</span>
                 <span className="item-price">${item?.price}</span>
                 <span className="item-quantity">Quantity: {quantity}</span>
             </li>

@@ -10,17 +10,17 @@ interface Props {
 type Iprops = IProduct & Props;
 
 
-const Index = ({ id, title, description, rating, price, image, addProductToCart }: Iprops) => {
+const Index = ({ _id, name, description, rating, price, imageUrl, addProductToCart }: Iprops) => {
 
     return (
         <div className='product'>
-            <Link className='product-link' to={`/products/${id}`} key={id} >
+            <Link className='product-link' to={`/products/${_id}`} key={_id} >
                 <div className='product-img'>
-                    <img src={image} alt={image} />
+                    <img src={`../assets/uploads/${imageUrl}`} alt={imageUrl} />
                 </div>
                 <div className='product-content'>
                     <div className='product-title'>
-                        <h2>{title}</h2>
+                        <h2>{name}</h2>
                         <span>${price}</span>
                     </div>
                     <p>{description}</p>
@@ -32,7 +32,7 @@ const Index = ({ id, title, description, rating, price, image, addProductToCart 
                     </div>
                 </div>
             </Link >
-            <button className='product-add' onClick={() => addProductToCart(id)}>Add to Cart</button>
+            <button className='product-add' onClick={() => addProductToCart(_id)}>Add to Cart</button>
         </div>
     )
 }

@@ -13,7 +13,7 @@ const Index = () => {
     const { data: products, isLoading, isSuccess, isError, error } = useGetProductsQuery<ProductData>("undefined");
     const [updateCart] = useUpdateCartMutation()
     const token = localStorage.getItem('token')
-    console.log(products)
+    // console.log(products)
     let decodedToken: any = {}
     if (token !== null) {
         decodedToken = jwt_decode(token);
@@ -56,7 +56,7 @@ const Index = () => {
                 </select>
             </div>
             <div className='products'>
-                <ProductList products={products.products}  selectedFilter={selectedFilter} addProductToCart={addProductToCart} />
+                <ProductList products={products}  selectedFilter={selectedFilter} addProductToCart={addProductToCart} />
             </div >
         </>
     )

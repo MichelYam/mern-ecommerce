@@ -102,15 +102,17 @@ export const getProduct: RequestHandler<unknown, unknown, ProductBody, unknown> 
 
 export const addProduct: RequestHandler<unknown, unknown, ProductBody, unknown> =async (req, res) => {
     try {
-        // const sku = req.body.sku;
-        const name = req.body.name;
-        const description = req.body.description;
-        const quantity = req.body.quantity;
-        const price = req.body.price;
+      
+      // const sku = req.body.sku;
+      const name = req.body.name;
+      const description = req.body.description;
+      const quantity = req.body.quantity;
+      const price = req.body.price;
         const taxable = req.body.taxable;
         const isActive = req.body.isActive;
         const brand = req.body.brand;
-        const imageUrl = req.body.imageUrl;
+        // const imageUrl = req.body.imageUrl;
+        const imageUrl = req.file ? req.file.filename : null;
       // console.log("image", imageUrl)
         // if (!sku) {
         //   return res.status(400).json({ error: 'You must enter sku.' });
@@ -151,7 +153,7 @@ export const addProduct: RequestHandler<unknown, unknown, ProductBody, unknown> 
           imageUrl,
           // imageKey
         });
-  
+
         const savedProduct = await product.save();
   
         res.status(200).json({

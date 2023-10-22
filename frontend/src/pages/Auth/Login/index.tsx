@@ -30,12 +30,8 @@ const Index = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login form submitted");
-    // userLogin({ data.email, data.password })
     loginUser({ email, password })
       .then((response) => {
-        // Handle successful login
         console.log("response", response);
         if ('data' in response) {
           navigate("/")
@@ -46,7 +42,6 @@ const Index = () => {
         }
       })
       .catch((err) => {
-        // Handle login error
         console.error("err", err);
       });
 
