@@ -162,3 +162,7 @@
     display: table;
     clear: both;
 }
+
+.dropdown-shopping {
+    cursor: pointer;
+}

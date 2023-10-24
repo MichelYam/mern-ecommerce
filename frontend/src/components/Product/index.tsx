@@ -4,35 +4,34 @@ import './style.css'
 import { IProduct } from '../../service/api'
 import { Link } from 'react-router-dom'
 
-interface Props {
-    addProductToCart: (id?: string) => void
+interface IProps {
+    addProductToCart: (product: IProduct) => void
+    product: IProduct
 }
-type Iprops = IProduct & Props;
 
-
-const Index = ({ _id, name, description, rating, price, imageUrl, addProductToCart }: Iprops) => {
+const Index = ({ product, addProductToCart }: IProps) => {
 
     return (
         <div className='product'>
-            <Link className='product-link' to={`/products/${_id}`} key={_id} >
+            <Link className='product-link' to={`/products/${product._id}`} key={product._id} >
                 <div className='product-img'>
-                    <img src={`../assets/uploads/${imageUrl}`} alt={imageUrl} />
+                    <img src={`../assets/uploads/${product.imageUrl}`} alt={product.imageUrl} />
                 </div>
                 <div className='product-content'>
                     <div className='product-title'>
-                        <h2>{name}</h2>
-                        <span>${price}</span>
+                        <h2>{product.name}</h2>
+                        <span>${product.price}</span>
                     </div>
-                    <p>{description}</p>
+                    <p>{product.description}</p>
                     <div className='product-notation'>
                         <div className='product-notation-stars'>
-                            <i data-star={rating?.rate}></i>
+                            <i data-star={product.rating?.rate}></i>
                         </div>
-                        <span>({rating?.count})</span>
+                        <span>({product.rating?.count})</span>
                     </div>
                 </div>
             </Link >
-            <button className='product-add' onClick={() => addProductToCart(_id)}>Add to Cart</button>
+            <button className='product-add' onClick={() => addProductToCart(product)}>Add to Cart</button>
         </div>
     )
 }

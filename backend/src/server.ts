@@ -6,6 +6,7 @@ import UserModel from "./models/user"
 import keys from './config/keys';
 import userRoutes from "./routes/api/user";
 import productRoutes from "./routes/api/product";
+import cartRoutes from "./routes/api/cart";
 import setupDB from './config/db';
 import helmet from "helmet";
 import cors from "cors";
@@ -27,13 +28,18 @@ app.use(
         frameguard: true
     })
 );
+require('./config/passport')(app);
+
 app.get("/", async (req: Request, res: Response) => {
     res.send('Hello from my Express server v2!')
 })
-app.use("/api/users", userRoutes);
-app.use("/api/products", productRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/product", productRoutes);
+app.use("/api/cart", cartRoutes);
 // app.use(routes);
+
+setupDB();
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
-setupDB();

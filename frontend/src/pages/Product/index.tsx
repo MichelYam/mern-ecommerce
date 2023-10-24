@@ -34,15 +34,15 @@ const Index = () => {
             console.error("err", err);
         });
     }
-    useEffect(() => {
-        if (product === null) {
-            navigate("/error");
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (product === null) {
+    //         navigate("/error");
+    //     }
+    // }, [])
 
     return (
         <>
-            <ProductView {...product} addProductToCart={addProductToCart} />
+            <ProductView {...product} product={product} addProductToCart={() => addProductToCart} />
         </>
     )
 }

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import Product from '../../components/Product'
 import Hero from '../../components/Hero'
-import { ProductData, cartData, useGetProductsQuery, useGetUserCartQuery, useUpdateCartMutation } from '../../service/api'
+import { IProduct, ProductData, cartData, useUpdateCartMutation, useGetProductsQuery, useGetUserCartQuery } from '../../service/api'
 import jwt_decode from 'jwt-decode';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -32,17 +32,27 @@ const Index = () => {
         console.log(value);
         setSelectedFilter(value);
     };
-    const addProductToCart = (productId: string) => {
-        console.log("productId", cart)
-        const newProduct: any = { productId: productId, quantity: 1 }
-        const products = { ...cart[0], products: { ...cart[0].products, newProduct } }
-        const cartId = cart[0].id
-        console.log(cartId, products)
-        updateCart({ cartId, ...products }).then((response) => {
+    const addProductToCart = (product: IProduct) => {
+        // console.log("product", product)
+        // product.quantity = Number(getState().product.productShopData.quantity);
+        // product.totalPrice = product.quantity * product.price;
+        // product.totalPrice = parseFloat(product.totalPrice.toFixed(2));
+
+
+        updateCart(product).then((response) => {
             console.log("response", response);
         }).catch((err) => {
             console.error("err", err);
         });
+        // const newProduct: any = { productId: productId, quantity: 1 }
+        // const products = { ...cart[0], products: { ...cart[0].products, newProduct } }
+        // const cartId = cart[0].id
+        // console.log(cartId, products)
+        // updateCart({ cartId, ...products }).then((response) => {
+        //     console.log("response", response);
+        // }).catch((err) => {
+        //     console.error("err", err);
+        // });
     }
 
     return (
@@ -56,7 +66,7 @@ const Index = () => {
                 </select>
             </div>
             <div className='products'>
-                <ProductList products={products}  selectedFilter={selectedFilter} addProductToCart={addProductToCart} />
+                <ProductList products={products} selectedFilter={selectedFilter} addProductToCart={addProductToCart} />
             </div >
         </>
     )

@@ -4,6 +4,8 @@ import { getTokenFromLocalStorage } from "../utils/TokenStorage"
 // import { createProduct, deleteProduct, getMyProducts } from "./productAction"
 
 export interface IProduct {
+    totalPrice: number
+    quantity: number
     sort?: any
     map?: any
     _id?: string
@@ -105,20 +107,20 @@ export const productApi = createApi({
     endpoints: (builder) => ({
         // Product endpoints
         getProducts: builder.query<undefined, string>({
-            query: () => `products`,
-            transformResponse: (response: any) => {return response.products}
+            query: () => `product`,
+            transformResponse: (response: any) => { return response.products }
         }),
         getCategories: builder.query<ICategories, any>({
-            query: () => `products/categories`,
+            query: () => `product/categories`,
         }),
         getProductById: builder.query<IProduct, any>({
-            query: (id) => `products/${id}`,
-            transformResponse: (response: any) => {return response.product}
+            query: (id) => `product/${id}`,
+            transformResponse: (response: any) => { return response.product }
 
         }),
         addProduct: builder.mutation({
             query: (product) => ({
-                url: 'products/add',
+                url: 'product/add',
                 method: "POST",
                 body: product,
                 headers: {
@@ -129,25 +131,25 @@ export const productApi = createApi({
         }),
         updateProduct: builder.mutation({
             query: (product) => ({
-                url: `products/${product.id}`,
+                url: `product/${product.id}`,
                 method: "PATCH",
                 body: product
             })
         }),
         deleteProduct: builder.mutation({
             query: ({ id }) => ({
-                url: `products/${id}`,
+                url: `product/${id}`,
                 method: "DELETE",
                 body: id
             })
         }),
         //user endpoints
         getUsers: builder.query<IUser[], void>({
-            query: () => 'users',
+            query: () => 'user',
         }),
         getUser: builder.query<IUserr, any>({
             query: () => ({
-                url: 'users/me',
+                url: 'user/me',
                 headers: {
                     Authorization: `Bearer ${getTokenFromLocalStorage()}`,
                 },
@@ -156,21 +158,21 @@ export const productApi = createApi({
         }),
         loginUser: builder.mutation<IUser, Partial<IUser>>({
             query: ({ email, password }) => ({
-                url: 'users/login',
+                url: 'user/login',
                 method: 'POST',
                 body: { email, password }
             }),
         }),
         addUser: builder.mutation<IUser, Partial<IUser>>({
             query: (user) => ({
-                url: 'users',
+                url: 'user',
                 method: 'POST',
                 body: user,
             }),
         }),
         updateUser: builder.mutation<IUser, any>({
             query: (user) => ({
-                url: 'users',
+                url: 'user',
                 headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
                 method: 'PUT',
                 body: user,
@@ -178,62 +180,76 @@ export const productApi = createApi({
         }),
         deleteUser: builder.mutation<void, number>({
             query: (id) => ({
-                url: `users/${id}`,
+                url: `user/${id}`,
                 method: 'DELETE',
             }),
         }),
         forgotPassword: builder.mutation<void, any>({
             query: (email) => ({
-                url: 'users/forgot',
+                url: 'user/forgot',
                 method: 'POST',
                 body: { email },
             }),
         }),
         resetPassword: builder.mutation<void, any>({
             query: (password) => ({
-                url: 'users/reset/:token',
+                url: 'user/reset/:token',
                 method: 'POST',
                 body: { password },
             }),
         }),
         //carts endpoints
         getAllCarts: builder.query<undefined, string>({
-            query: () => `carts`,
+            query: () => `cart`,
         }),
         getCart: builder.query<cartData, any>({
-            query: (id) => `carts/${id}`,
+            query: (id) => `cart/${id}`,
         }),
-        // getUserCart: builder.mutation<cartData, Partial<ICart>>({
-        //     query: (id) => ({
-        //         url: `carts/user/${id}`,
-        //         method: "GET",
-        //     })
-        // }),
         getUserCart: builder.query<ICart, Partial<ICart>>({
             query: (sub) => ({
-                url: `carts/user/${sub}`,
+                url: `cart/user/${sub}`,
                 method: "GET",
             })
         }),
-        addCart: builder.mutation<ICart, Partial<ICart>>({
+        createCart: builder.mutation<ICart, Partial<ICart>>({
             query: (Cart) => ({
-                url: 'carts',
+                url: 'add',
                 method: "POST",
-                body: Cart
+                body: Cart,
+                headers: {
+                    Authorization: `Bearer ${getTokenFromLocalStorage()}`,
+                },
             })
         }),
+        // addToCart: builder.mutation<ICart, Partial<ICart>>({
+        //     query: (product) => ({
+        //         url: 'cart/add',
+        //         method: "POST",
+        //         body: { products: product },
+        //         headers: {
+        //             Authorization: `Bearer ${getTokenFromLocalStorage()}`,
+        //         },
+        //     })
+        // }),
         updateCart: builder.mutation({
             query: ({ id, ...cart }) => ({
-                url: `carts/${id}`,
+                url: `cart/${id}`,
                 method: "PUT",
                 body: cart
             })
         }),
         deleteCart: builder.mutation({
-            query: ({ id }) => ({
-                url: `carts/${id}`,
+            query: ({ cartId }) => ({
+                url: `cart/${cartId}`,
                 method: "DELETE",
-                body: id
+                body: cartId
+            })
+        }),
+        deleteProductFromCart: builder.mutation({
+            query: ({ cartId, productId }) => ({
+                url: `cart/${cartId}/${productId}`,
+                method: "DELETE",
+                body: productId
             })
         }),
     }),
@@ -241,19 +257,20 @@ export const productApi = createApi({
 
 
 export const { useGetProductsQuery,
-    useGetProductByIdQuery,
-    useGetCategoriesQuery,
-    useAddProductMutation,
-    useDeleteProductMutation,
-    useUpdateProductMutation,
-    useGetUsersQuery,
     useLoginUserMutation,
-    useGetAllCartsQuery,
-    useGetCartQuery,
-    useGetUserCartQuery,
-    useUpdateCartMutation,
     useGetUserQuery,
+    useGetUsersQuery,
     useUpdateUserMutation,
     useForgotPasswordMutation,
     useResetPasswordMutation,
+    useGetCategoriesQuery,
+    useGetProductByIdQuery,
+    useAddProductMutation,
+    useDeleteProductMutation,
+    useUpdateProductMutation,
+    useGetAllCartsQuery,
+    useGetUserCartQuery,
+    useGetCartQuery,
+    useCreateCartMutation,
+    useUpdateCartMutation
 } = productApi;

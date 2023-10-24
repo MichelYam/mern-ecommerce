@@ -6,11 +6,11 @@ import { TbTruckDelivery } from 'react-icons/tb'
 import { PiShoppingBagOpenDuotone } from 'react-icons/pi'
 import InputNumber from '../InputNumber'
 interface Props {
-    addProductToCart: (_id?: string) => void
+    addProductToCart: (product?: IProduct) => void
+    product?: IProduct
 }
 
-type Iprops = IProduct & Props;
-const Index = ({ _id, name, description, rating, price, imageUrl, category, addProductToCart }: Iprops) => {
+const Index = ({ product, addProductToCart }: Props) => {
 
     return (
         <>
@@ -22,25 +22,25 @@ const Index = ({ _id, name, description, rating, price, imageUrl, category, addP
                     /
                 </li>
                 <li>
-                    <p>{category}</p>
+                    <p>{product?.category}</p>
                 </li>
             </ul>
             <div className='product-detailed'>
                 <div className='product-full-img'>
-                    <img src={`../assets/uploads/${imageUrl}`} alt={imageUrl} />
+                    <img src={`../assets/uploads/${product?.imageUrl}`} alt={product?.imageUrl} />
                 </div>
                 <div className='product-info'>
-                    <h2>{name}</h2>
-                    <p className='product-description'>{description}</p>
+                    <h2>{product?.name}</h2>
+                    <p className='product-description'>{product?.description}</p>
                     <div className='product-notation'>
                         <div className='product-notation-stars'>
-                            <i data-star={rating?.rate}></i>
+                            <i data-star={product?.rating?.rate}></i>
                         </div>
-                        <span>({rating?.count})</span>
+                        <span>({product?.rating?.count})</span>
                     </div>
                     <hr />
                     <div className='product-price'>
-                        <h3>{price}$</h3>
+                        <h3>{product?.price}$</h3>
                         <p>Suggested payments with 6 months special financing</p>
                     </div>
                     <hr />
@@ -50,7 +50,7 @@ const Index = ({ _id, name, description, rating, price, imageUrl, category, addP
                     </div>
                     <div className='product-btn'>
                         <button className='btn-medium'>Buy Now</button>
-                        <button className='btn-medium' onClick={() => addProductToCart(_id)}>Add to Cart</button>
+                        <button className='btn-medium' onClick={() => addProductToCart(product)}>Add to Cart</button>
                     </div>
                     <div className='product-delivery'>
                         <div className='flex product-delivery-option'>

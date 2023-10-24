@@ -9,7 +9,7 @@ import productRoutes from './product';
 // import brandRoutes from './brand';
 // const contactRoutes = require('./contact');
 // const merchantRoutes = require('./merchant');
-// const cartRoutes = require('./cart');
+import cartRoutes from './cart';
 // const orderRoutes = require('./order');
 // const reviewRoutes = require('./review');
 // const wishlistRoutes = require('./wishlist');
@@ -41,8 +41,8 @@ router.use('/product', productRoutes);
 // // merchant routes
 // router.use('/merchant', merchantRoutes);
 
-// // cart routes
-// router.use('/cart', cartRoutes);
+// cart routes
+router.use('/cart', cartRoutes);
 
 // // order routes
 // router.use('/order', orderRoutes);

@@ -12,11 +12,9 @@ interface JwtPayload {
     id: string
 }
 
-export const getAuthenticatedUser: RequestHandler = async (req: any, res, next) => {
+export const getAuthenticatedUser: RequestHandler = async (req: any, res) => {
     try {
-        const jwtToken = req.headers.authorization.split("Bearer")[1].trim();
-        const { id } = jwt.decode(jwtToken) as JwtPayload;
-        const user = await User.findOne({ _id: id }).select("-password");
+        const user = await User.findOne({ _id: req.user._id }).select("-password");
 
         if (!user) {
             throw new Error("User not found!");
