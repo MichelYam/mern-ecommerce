@@ -4,21 +4,22 @@ import { getTokenFromLocalStorage } from "../utils/TokenStorage"
 // import { createProduct, deleteProduct, getMyProducts } from "./productAction"
 
 export interface IProduct {
-    totalPrice: number
-    quantity: number
+    totalPrice: number | string
+    quantity: number | string
     sort?: any
     map?: any
-    _id?: string
+    _id?: number | string
     name?: string
     imageUrl?: string
     category?: string
     description?: string
-    price?: string
+    price?: any
     rating?: {
-        count?: number
-        rate?: number
+        count?: number | string
+        rate?: number | string
     }
     createdBy?: string
+    inventory?: string | number
     type?: 'Product'
 }
 export interface ICategories {
@@ -36,10 +37,17 @@ export interface ProductData {
 export interface cartData {
     loading: boolean,
     error: string | null;
-    data: Array<ICart>
+    data: ICart
     isLoading: boolean
     isSuccess: boolean
     isError: boolean
+}
+export interface ICart {
+    _id: string,
+    user: IUser,
+    date: string,
+    products: IProduct
+    totalPrice: string
 }
 export interface Categories {
     data: ICategories
@@ -58,26 +66,10 @@ export interface IUser {
     phone: string
     token: string
     city: string
+    street: string
     avatar: string
     email?: string
     type?: 'User'
-}
-export interface IUserr {
-    user: {
-        id?: string
-        firstName?: string
-        lastName?: string
-        password?: string
-        role: string
-        country: string
-        zipCode: string
-        phone: string
-        token: string
-        city: string
-        avatar: string
-        email?: string
-        type?: 'User'
-    }
 }
 export interface userData {
     loading: boolean,
@@ -87,18 +79,6 @@ export interface userData {
     isSuccess: boolean
     isError: boolean
 }
-export interface ICart {
-    map(arg0: (item: any) => void): import("react").ReactNode
-    id: string,
-    userId: string,
-    date: string,
-    products: IProduct[]
-}
-// const initialState: IEvent = {
-//     loading: false,
-//     error: null,
-//     events: [],
-// }
 
 export const productApi = createApi({
     reducerPath: "productApi",
@@ -147,14 +127,14 @@ export const productApi = createApi({
         getUsers: builder.query<IUser[], void>({
             query: () => 'user',
         }),
-        getUser: builder.query<IUserr, any>({
+        getUser: builder.query<IUser, any>({
             query: () => ({
                 url: 'user/me',
                 headers: {
                     Authorization: `Bearer ${getTokenFromLocalStorage()}`,
                 },
             }),
-
+            transformResponse: (response: any) => { return response.user }
         }),
         loginUser: builder.mutation<IUser, Partial<IUser>>({
             query: ({ email, password }) => ({
@@ -198,18 +178,18 @@ export const productApi = createApi({
                 body: { password },
             }),
         }),
-        //carts endpoints
+        //Carts endpoints
         getAllCarts: builder.query<undefined, string>({
             query: () => `cart`,
         }),
         getCart: builder.query<cartData, any>({
-            query: (id) => `cart/${id}`,
-        }),
-        getUserCart: builder.query<ICart, Partial<ICart>>({
-            query: (sub) => ({
-                url: `cart/user/${sub}`,
-                method: "GET",
-            })
+            query: () => ({
+                url: `cart`,
+                headers: {
+                    Authorization: `Bearer ${getTokenFromLocalStorage()}`,
+                },
+            }), transformResponse: (response: any) => { return response.cart }
+
         }),
         createCart: builder.mutation<ICart, Partial<ICart>>({
             query: (Cart) => ({
@@ -221,21 +201,14 @@ export const productApi = createApi({
                 },
             })
         }),
-        // addToCart: builder.mutation<ICart, Partial<ICart>>({
-        //     query: (product) => ({
-        //         url: 'cart/add',
-        //         method: "POST",
-        //         body: { products: product },
-        //         headers: {
-        //             Authorization: `Bearer ${getTokenFromLocalStorage()}`,
-        //         },
-        //     })
-        // }),
         updateCart: builder.mutation({
-            query: ({ id, ...cart }) => ({
-                url: `cart/${id}`,
+            query: ({ cartId, ...product }) => ({
+                url: `cart/${cartId}`,
                 method: "PUT",
-                body: cart
+                body: product,
+                headers: {
+                    Authorization: `Bearer ${getTokenFromLocalStorage()}`,
+                },
             })
         }),
         deleteCart: builder.mutation({
@@ -269,7 +242,6 @@ export const { useGetProductsQuery,
     useDeleteProductMutation,
     useUpdateProductMutation,
     useGetAllCartsQuery,
-    useGetUserCartQuery,
     useGetCartQuery,
     useCreateCartMutation,
     useUpdateCartMutation

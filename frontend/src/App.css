@@ -38,7 +38,7 @@
 
 main {
   margin: 25px auto;
-  height: 95vh;
+  min-height: 95vh;
 }
 
 li {

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import Product from '../../components/Product'
 import Hero from '../../components/Hero'
-import { IProduct, ProductData, cartData, useUpdateCartMutation, useGetProductsQuery, useGetUserCartQuery } from '../../service/api'
+import { IProduct, ProductData, cartData, useUpdateCartMutation, useGetProductsQuery, useGetCartQuery } from '../../service/api'
 import jwt_decode from 'jwt-decode';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -20,7 +20,7 @@ const Index = () => {
         // console.log(decodedToken.sub);
     }
 
-    const { data: cart } = useGetUserCartQuery<cartData>(decodedToken.sub);
+    // const { data: cart } = useGetCartQuery<cartData>("");
     if (isLoading) return <div>
         <Skeleton />
         <Skeleton width="60%" />
@@ -32,29 +32,30 @@ const Index = () => {
         console.log(value);
         setSelectedFilter(value);
     };
-    const addProductToCart = (product: IProduct) => {
-        // console.log("product", product)
-        // product.quantity = Number(getState().product.productShopData.quantity);
-        // product.totalPrice = product.quantity * product.price;
-        // product.totalPrice = parseFloat(product.totalPrice.toFixed(2));
-
-
-        updateCart(product).then((response) => {
-            console.log("response", response);
-        }).catch((err) => {
-            console.error("err", err);
-        });
-        // const newProduct: any = { productId: productId, quantity: 1 }
-        // const products = { ...cart[0], products: { ...cart[0].products, newProduct } }
-        // const cartId = cart[0].id
-        // console.log(cartId, products)
-        // updateCart({ cartId, ...products }).then((response) => {
-        //     console.log("response", response);
-        // }).catch((err) => {
-        //     console.error("err", err);
-        // });
+    const test = {
+        quantity: 1
     }
+    // Handle add item From Cart
+    const addProductToCart = (product: IProduct) => {
+        const newProduct = { ...product }
 
+        newProduct.quantity = 1;
+        newProduct.totalPrice = newProduct.quantity * product.price;
+        newProduct.totalPrice = parseFloat(newProduct.totalPrice.toFixed(2));
+        newProduct.inventory = product.quantity;
+
+        let newCartItems = [];
+        // const newProduct: any = { ...product, quantity: 1, totalPrice: (product.price * 1).toFixed(2) }
+        const cartItems = JSON.parse(localStorage.getItem("cart_items") as any);
+        if (cartItems) {
+            newCartItems = [...cartItems, newProduct];
+        } else {
+            newCartItems.push(newProduct);
+        }
+        console.log(newCartItems)
+        localStorage.setItem("cart_items", JSON.stringify(newCartItems));
+
+    }
     return (
         <>
             <Hero />

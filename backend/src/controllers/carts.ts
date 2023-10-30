@@ -21,7 +21,7 @@ interface CartBody {
 }
 export const getCart: RequestHandler = async (req: any, res: any) => {
   try {
-    const cart = await Cart.findOne({ user: req.user._id }).populate("products.product");
+    const cart = await Cart.findOne({ user: req.user._id }).populate("user products.product");
 
     res.status(200).json({
       success: true,
@@ -66,10 +66,9 @@ export const createCart: RequestHandler = async (req: any, res: any) => {
 
 export const updateCart: RequestHandler = async (req, res) => {
   try {
-    const product = req.body.product;
+    const product = req.body.newProduct;
     const query = { _id: req.params.cartId };
-    console.log("product", product)
-    console.log("query", query)
+
     await Cart.updateOne(query, { $push: { products: product } }).exec();
 
     res.status(200).json({

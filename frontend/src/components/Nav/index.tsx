@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import logo from "../../assets/logo/shopping-cart.png"
 import { TbShoppingCartPlus } from 'react-icons/tb'
 import { GoPerson } from 'react-icons/go'
@@ -6,7 +6,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 
 import './style.css'
 import { Link } from 'react-router-dom';
-import { Categories, cartData, useAddProductMutation, useGetCategoriesQuery, useGetUserCartQuery } from '../../service/api';
+import { Categories, cartData, useAddProductMutation, useGetCategoriesQuery, useGetCartQuery, ICart, IProduct } from '../../service/api';
 import DropdownMenu from '../DropdownMenu';
 import jwt_decode from 'jwt-decode';
 
@@ -19,7 +19,6 @@ import Modal from '@mui/material/Modal';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-// import FileDrop from '../FileDrop';
 import { useDropzone } from 'react-dropzone'
 
 const style = {
@@ -38,28 +37,35 @@ const Index = () => {
     const { data: categories } = useGetCategoriesQuery<Categories>("undefined");
     const [addProduct] = useAddProductMutation<Categories>();
     const [product, setProduct] = useState({
-        // sku: "",
         name: "",
         description: "",
         quantity: "",
         price: "",
-        // taxable: "",
-        // isActive: "",
         brand: "",
         imageUrl: ""
     })
+
+    const [cart, setCart] = useState<ICart | any>([])
     const [isOpen, setIsOpen] = useState(false)
     const [isOpenProduct, setIsOpenProduct] = useState(false)
     const [preview, setPreview] = useState<any>("")
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-    let decodedToken: any = {}
-    if (token !== null) {
-        decodedToken = jwt_decode(token);
-    }
+    // let decodedToken: any = {}
+    // if (token !== null) {
+    //     decodedToken = jwt_decode(token);
+    // }
+
+    useEffect(() => {
+        const savedCartItems = localStorage.getItem("cart_items");
+        if (savedCartItems) {
+            setCart(JSON.parse(savedCartItems));
+            console.log("test")
+        }
+    }, [])
+
     const onDrop = useCallback((acceptedFiles: any) => {
         const file = new FileReader;
-        console.log(acceptedFiles)
         file.onload = () => {
             setPreview(file.result)
         }
@@ -67,14 +73,16 @@ const Index = () => {
     }, [])
 
     const { acceptedFiles, getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
-    const { data: cart } = useGetUserCartQuery<cartData>(decodedToken.sub);
+
     const handleOptionSelect = (option: string) => {
         console.log('Selected option:', option);
     };
+
     const logOut = () => {
         clearStorage()
         window.location.reload();
     }
+
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -90,7 +98,6 @@ const Index = () => {
         })
     }
 
-
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (typeof acceptedFiles[0] === 'undefined') return;
@@ -99,12 +106,23 @@ const Index = () => {
             imageUrl: acceptedFiles[0].name
         }
 
-        // console.log(newData)
-        // formData.append('upload_preset', "test-react-uploads-unsigned")
-        // formData.append('api_key', import.meta.env.VITE_CLOUDINARY_API_KEY)
         addProduct(newData)
         setIsOpenProduct(false)
     }
+    const calculateCartTotal = () => {
+        const cartItems = cart;
+        console.log(cartItems)
+
+        let total = 0;
+
+        cartItems.map((item: { price: number; quantity: number; }) => {
+            total += item.price * item.quantity;
+
+        });
+        total = parseFloat(total.toFixed(2));
+        localStorage.setItem("cart_price", JSON.stringify(total));
+        return total
+    };
     return (
         <>
             <nav className="nav">
@@ -169,24 +187,20 @@ const Index = () => {
                         </div>
                         {isOpen && <div className="shopping-cart">
                             <div className="shopping-cart-header">
-                                <i className="fa fa-shopping-cart cart-icon"></i><span className="badge">3</span>
+                                <i className="fa fa-shopping-cart cart-icon"></i><span className="badge">{cart.length}</span>
                                 <div className="shopping-cart-total">
                                     <span className="lighter-text">Total:</span>
-                                    <span className="main-color-text">$2,229.97</span>
+                                    <span className="main-color-text"> ${calculateCartTotal()}</span>
                                 </div>
                             </div>
 
                             <ul className="shopping-cart-items">
                                 {
-                                    !cart && <p> Your shopping cart is empty</p>
+                                    cart.length > 0 ? cart && cart.map((item: IProduct, index: number) =>
+                                        <ShoppingCart key={index} {...item} />
+                                    ) :
+                                        <p> Your shopping cart is empty</p>
                                 }
-                                {cart && cart.map((item: any) => {
-                                    console.log(cart)
-                                    // <p>{p.products}</p>
-                                    return item.products.map((product: any) => {
-                                        return <ShoppingCart key={product.productId} id={product.productId} quantity={product.quantity} />
-                                    })
-                                })}
                             </ul>
                             <Link to="/checkout" className="button">Checkout</Link>
                         </div>}
@@ -215,8 +229,6 @@ const Index = () => {
                             }} onChange={handleChangeValue} required />
                         </FormControl>
                         <FormControl sx={{ m: 1, with: "100%" }}>
-                            {/* <TextField type='file' id="file" onChange={handleChangeValue} required /> */}
-                            {/* <FileDrop/> */}
                             <div {...getRootProps()}>
                                 <input {...getInputProps()} />
                                 {
@@ -239,4 +251,3 @@ const Index = () => {
 }
 
 export default Index
-

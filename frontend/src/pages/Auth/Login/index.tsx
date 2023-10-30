@@ -32,7 +32,7 @@ const Index = () => {
     e.preventDefault();
     loginUser({ email, password })
       .then((response) => {
-        console.log("response", response);
+        // console.log("response", response);
         if ('data' in response) {
           navigate("/")
           saveStorage(response.data.token, remember)

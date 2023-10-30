@@ -35,6 +35,7 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: [true, "Your password is required"],
+        select: false
     },
     codePostal: {
         type: String,
@@ -50,8 +51,15 @@ const userSchema = new Schema({
         default: ROLES.Member,
         enum: [ROLES.Admin, ROLES.Member, ROLES.Merchant]
     },
-    resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Number },
+    resetPasswordToken: {
+        type: String,
+        select: false
+
+    },
+    resetPasswordExpires: {
+        type: Number,
+        select: false
+    },
     updated: Date,
     createdAt: {
         type: Date,

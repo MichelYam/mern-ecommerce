@@ -15,11 +15,8 @@ import { FiEdit } from 'react-icons/fi'
 
 
 const Index = () => {
-    const { data, isLoading, isSuccess, isError, error } = useGetUserQuery("")
+    const { data: user, isLoading, isSuccess, isError, error } = useGetUserQuery("")
     const [updateUser] = useUpdateUserMutation()
-    // const [editAvatar, setEditAvatar] = useState(false)
-    // const [editAddress, setEditAddress] = useState(false)
-    // const [editInfo, setEditInfo] = useState(false)
     const [edit, setEdit] = useState(false)
     const [userData, setUserData] = useState({
         firstName: "",
@@ -34,20 +31,20 @@ const Index = () => {
     })
 
     useEffect(() => {
-        if (data) {
+        if (user) {
             setUserData({
-                firstName: data.user.firstName || "",
-                lastName: data.user.lastName || "",
-                email: data.user.email || "",
-                avatar: data.user.avatar || "",
-                role: data.user.role,
-                city: data.user.city || "",
-                phone: data.user.phone || "",
-                country: data.user.country || "",
-                zipCode: data.user.zipCode || "",
+                firstName: user.firstName || "",
+                lastName: user.lastName || "",
+                email: user.email || "",
+                avatar: user.avatar || "",
+                role: user.role,
+                city: user.city || "",
+                phone: user.phone || "",
+                country: user.country || "",
+                zipCode: user.zipCode || "",
             });
         }
-    }, [data]);
+    }, [user]);
     const handleChangeValue = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
         const target = event.target as HTMLInputElement;
         setUserData({

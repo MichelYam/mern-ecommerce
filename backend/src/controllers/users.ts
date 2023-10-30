@@ -134,7 +134,7 @@ export const login: RequestHandler<unknown, unknown, LoginBody, unknown> = async
             return res.status(400).json({ error: 'You must enter a password.' });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select("password");
         if (!user) {
             return res
                 .status(400)
@@ -146,10 +146,9 @@ export const login: RequestHandler<unknown, unknown, LoginBody, unknown> = async
         //         error: `That email address is already in use using ${user.provider} provider.`
         //     });
         // }
+        const isVerify = await bcrypt.compare(password, user.password);
 
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) {
+        if (!isVerify) {
             return res.status(400).json({
                 success: false,
                 error: 'Password Incorrect'
