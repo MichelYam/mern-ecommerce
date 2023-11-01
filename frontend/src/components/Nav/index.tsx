@@ -6,7 +6,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 
 import './style.css'
 import { Link } from 'react-router-dom';
-import { Categories, cartData, useAddProductMutation, useGetCategoriesQuery, useGetCartQuery, ICart, IProduct } from '../../service/api';
+import { Categories, useAddProductMutation, useGetCategoriesQuery, ICart, IProduct } from '../../service/api';
 import DropdownMenu from '../DropdownMenu';
 import jwt_decode from 'jwt-decode';
 
@@ -20,7 +20,12 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { useDropzone } from 'react-dropzone'
-
+import { calculateCartTotal } from '../../utils/cart';
+import {
+    createTheme,
+    PaletteColorOptions,
+    ThemeProvider,
+} from '@mui/material/styles';
 const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -32,7 +37,27 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
+declare module '@mui/material/styles' {
+    interface CustomPalette {
+        anger: PaletteColorOptions;
+        apple: PaletteColorOptions;
+        steelBlue: PaletteColorOptions;
+        violet: PaletteColorOptions;
+        black: PaletteColorOptions;
+    }
+    interface Palette extends CustomPalette { }
+    interface PaletteOptions extends CustomPalette { }
+}
 
+declare module '@mui/material/Button' {
+    interface ButtonPropsColorOverrides {
+        anger: true;
+        apple: true;
+        steelBlue: true;
+        violet: true;
+        black: true;
+    }
+}
 const Index = () => {
     const { data: categories } = useGetCategoriesQuery<Categories>("undefined");
     const [addProduct] = useAddProductMutation<Categories>();
@@ -46,11 +71,29 @@ const Index = () => {
     })
 
     const [cart, setCart] = useState<ICart | any>([])
-    const [isOpen, setIsOpen] = useState(false)
-    const [isOpenProduct, setIsOpenProduct] = useState(false)
-    const [preview, setPreview] = useState<any>("")
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    // const [isOpenProduct, setIsOpenProduct] = useState(false)
+    // const [preview, setPreview] = useState<any>("")
+
+    // Handle dropDown state
+    const [anchorUser, setAnchorUser] = React.useState<null | HTMLElement>(null);
+    const [anchorCart, setAnchorCart] = React.useState<null | HTMLElement>(null);
     const token = localStorage.getItem('token') || sessionStorage.getItem('token')
+    const openUser = Boolean(anchorUser);
+    const openCart = Boolean(anchorCart);
+
+    const { palette } = createTheme();
+    const { augmentColor } = palette;
+    const createColor = (mainColor: string) => augmentColor({ color: { main: mainColor } });
+    const theme = createTheme({
+        palette: {
+            anger: createColor('#F40B27'),
+            apple: createColor('#5DBA40'),
+            steelBlue: createColor('#5C76B7'),
+            violet: createColor('#BC00A3'),
+            black: createColor('#000000'),
+        },
+    });
     // let decodedToken: any = {}
     // if (token !== null) {
     //     decodedToken = jwt_decode(token);
@@ -64,15 +107,15 @@ const Index = () => {
         }
     }, [])
 
-    const onDrop = useCallback((acceptedFiles: any) => {
-        const file = new FileReader;
-        file.onload = () => {
-            setPreview(file.result)
-        }
-        file.readAsDataURL(acceptedFiles[0])
-    }, [])
+    // const onDrop = useCallback((acceptedFiles: any) => {
+    //     const file = new FileReader;
+    //     file.onload = () => {
+    //         setPreview(file.result)
+    //     }
+    //     file.readAsDataURL(acceptedFiles[0])
+    // }, [])
 
-    const { acceptedFiles, getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+    // const { acceptedFiles, getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
     const handleOptionSelect = (option: string) => {
         console.log('Selected option:', option);
@@ -83,48 +126,38 @@ const Index = () => {
         window.location.reload();
     }
 
-    const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
+    const handleUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorUser(event.currentTarget);
     };
-    const handleClose = () => {
-        setAnchorEl(null);
+    const handleUserClose = () => {
+        setAnchorUser(null);
     };
-
-    const handleChangeValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setProduct({
-            ...product,
-            [event.target.id]: event.target.value,
-        })
-    }
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (typeof acceptedFiles[0] === 'undefined') return;
-        const newData = {
-            ...product,
-            imageUrl: acceptedFiles[0].name
-        }
-
-        addProduct(newData)
-        setIsOpenProduct(false)
-    }
-    const calculateCartTotal = () => {
-        const cartItems = cart;
-        console.log(cartItems)
-
-        let total = 0;
-
-        cartItems.map((item: { price: number; quantity: number; }) => {
-            total += item.price * item.quantity;
-
-        });
-        total = parseFloat(total.toFixed(2));
-        localStorage.setItem("cart_price", JSON.stringify(total));
-        return total
+    const handleCartClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorCart(event.currentTarget);
     };
+    const handleCartClose = () => {
+        setAnchorCart(null);
+    };
+    // const handleChangeValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     setProduct({
+    //         ...product,
+    //         [event.target.id]: event.target.value,
+    //     })
+    // }
+
+    // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault();
+    //     if (typeof acceptedFiles[0] === 'undefined') return;
+    //     const newData = {
+    //         ...product,
+    //         imageUrl: acceptedFiles[0].name
+    //     }
+
+    //     addProduct(newData)
+    //     setIsOpenProduct(false)
+    // }
     return (
-        <>
+        <ThemeProvider theme={theme}>
             <nav className="nav">
                 <div className='logo'>
                     <img src={logo} alt="logo du site" />
@@ -150,103 +183,129 @@ const Index = () => {
                             <div className="dropdown-menu">
                                 <Button
                                     id="basic-button"
-                                    aria-controls={open ? 'basic-menu' : undefined}
+                                    variant='text'
+                                    color='black'
+                                    aria-controls={openUser ? 'basic-menu' : undefined}
                                     aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
+                                    aria-expanded={openUser ? 'true' : undefined}
+                                    onClick={handleUserClick}
+                                    startIcon={<GoPerson />}
                                 >
-                                    <GoPerson />
                                     Me
                                 </Button>
 
                                 <Menu
                                     id="basic-menu"
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
+                                    anchorEl={anchorUser}
+                                    open={openUser}
+                                    onClose={handleUserClose}
                                     MenuListProps={{
                                         'aria-labelledby': 'basic-button',
                                     }}
                                 >
-                                    <MenuItem onClick={handleClose}>Profile</MenuItem>
-                                    <MenuItem onClick={handleClose}><Link to={"/account"}>My account</Link></MenuItem>
-                                    <MenuItem onClick={() => setIsOpenProduct(true)}>Add Product</MenuItem>
+                                    <MenuItem onClick={handleUserClose}>Profile</MenuItem>
+                                    <MenuItem onClick={handleUserClose}><Link to={"/account"}>My account</Link></MenuItem>
+                                    {/* <MenuItem onClick={() => setIsOpenProduct(true)}>Add Product</MenuItem> */}
                                     <MenuItem onClick={logOut}>Logout</MenuItem>
                                 </Menu>
                             </div>
                             :
                             <Link to={'/login'}>
-                                <GoPerson />
-                                <span className="text-3xl font-bold underline text-red-600">Account</span>
+                                <Button color='black' variant="outlined" startIcon={<GoPerson />}>
+                                    Account
+                                </Button>
                             </Link>}
                     </div>
                     <div className='dropdown-shopping'>
-                        <div onClick={() => setIsOpen(!isOpen)}>
-                            <TbShoppingCartPlus />
-                            <span>Cart</span>
-                        </div>
-                        {isOpen && <div className="shopping-cart">
-                            <div className="shopping-cart-header">
-                                <i className="fa fa-shopping-cart cart-icon"></i><span className="badge">{cart.length}</span>
-                                <div className="shopping-cart-total">
-                                    <span className="lighter-text">Total:</span>
-                                    <span className="main-color-text"> ${calculateCartTotal()}</span>
-                                </div>
-                            </div>
-
-                            <ul className="shopping-cart-items">
-                                {
-                                    cart.length > 0 ? cart && cart.map((item: IProduct, index: number) =>
-                                        <ShoppingCart key={index} {...item} />
-                                    ) :
-                                        <p> Your shopping cart is empty</p>
-                                }
-                            </ul>
-                            <Link to="/checkout" className="button">Checkout</Link>
-                        </div>}
+                        <Link to={"/cart"}>
+                            <Button color='black' variant='text' startIcon={<TbShoppingCartPlus />}>
+                                Cart
+                            </Button>
+                        </Link>
+                        {/* <Button
+                        id="basic-button"
+                        aria-controls={openCart ? 'basic-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={openCart ? 'true' : undefined}
+                        onClick={handleCartClick}
+                    >
+                        <TbShoppingCartPlus />
+                        <span>Cart</span>
+                    </Button> */}
                     </div>
-                </div>
-            </nav>
-            <Modal open={isOpenProduct} onClose={() => setIsOpenProduct(false)} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-                <Box sx={style}>
-                    <h2>Create a new product</h2>
-                    <form className='create' onSubmit={handleSubmit}>
-                        <FormControl sx={{ m: 1, with: "100%" }}>
-                            <TextField id="name" label="Name" variant="outlined" onChange={handleChangeValue} required />
-                        </FormControl>
-                        <FormControl sx={{ m: 1 }}>
-                            <TextField id="description" label="Description" variant="outlined" multiline maxRows={4} onChange={handleChangeValue} />
-                        </FormControl>
-                        <FormControl sx={{ m: 1, with: "100%" }}>
-                            <TextField id="quantity" label="Quantity" variant="outlined" onChange={handleChangeValue} required />
-                        </FormControl>
-                        <FormControl sx={{ m: 1, with: "100%" }}>
-                            <TextField id="brand" label="Brand" variant="outlined" onChange={handleChangeValue} required />
-                        </FormControl>
-                        <FormControl sx={{ m: 1, with: "100%" }}>
-                            <TextField type='number' id="price" label="Price" inputProps={{
-                                maxLength: 13,
-                            }} onChange={handleChangeValue} required />
-                        </FormControl>
-                        <FormControl sx={{ m: 1, with: "100%" }}>
-                            <div {...getRootProps()}>
-                                <input {...getInputProps()} />
-                                {
-                                    isDragActive ?
-                                        <p>Drop the files here ...</p> :
-                                        <p>Drag 'n' drop some files here, or click to select files</p>
-                                }
+                    {/* {isOpen && */}
+                    {/* <Menu
+                    id="basic-menu"
+                    anchorEl={anchorCart}
+                    open={openCart}
+                    onClose={handleCartClose}
+                    MenuListProps={{
+                        'aria-labelledby': 'basic-button',
+                    }}
+                >
+                    <MenuItem onClick={logOut}>Logout</MenuItem>
+                    <div className="shopping-cart">
+                        <div className="shopping-cart-header">
+                            <i className="fa fa-shopping-cart cart-icon"></i><span className="badge">{cart.length}</span>
+                            <div className="shopping-cart-total">
+                                <span className="lighter-text">Total:</span>
+                                <span className="main-color-text"> ${calculateCartTotal(cart)}</span>
                             </div>
-                            <img className='preview-img' src={preview} height="200" />
-                        </FormControl>
-                        <div className='group-btn'>
-                            <Button onClick={() => setIsOpenProduct(false)} variant="contained">Cancel</Button>
-                            <Button type='submit' variant="contained">Create</Button>
                         </div>
-                    </form>
-                </Box>
-            </Modal >
-        </>
+
+                        <ul className="shopping-cart-items">
+                            {
+                                cart.length > 0 ? cart && cart.map((item: IProduct, index: number) =>
+                                    <ShoppingCart key={index} {...item} />
+                                ) :
+                                    <p> Your shopping cart is empty</p>
+                            }
+                        </ul>
+                        <Link to="/cart" className="button">Cart</Link>
+                    </div>
+                </Menu> */}
+                </div>
+            </nav >
+        </ThemeProvider>
+        // <Modal open={isOpenProduct} onClose={() => setIsOpenProduct(false)} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        //     <Box sx={style}>
+        //         <h2>Create a new product</h2>
+        //         <form className='create' onSubmit={handleSubmit}>
+        //             <FormControl sx={{ m: 1, with: "100%" }}>
+        //                 <TextField id="name" label="Name" variant="outlined" onChange={handleChangeValue} required />
+        //             </FormControl>
+        //             <FormControl sx={{ m: 1 }}>
+        //                 <TextField id="description" label="Description" variant="outlined" multiline maxRows={4} onChange={handleChangeValue} />
+        //             </FormControl>
+        //             <FormControl sx={{ m: 1, with: "100%" }}>
+        //                 <TextField id="quantity" label="Quantity" variant="outlined" onChange={handleChangeValue} required />
+        //             </FormControl>
+        //             <FormControl sx={{ m: 1, with: "100%" }}>
+        //                 <TextField id="brand" label="Brand" variant="outlined" onChange={handleChangeValue} required />
+        //             </FormControl>
+        //             <FormControl sx={{ m: 1, with: "100%" }}>
+        //                 <TextField type='number' id="price" label="Price" inputProps={{
+        //                     maxLength: 13,
+        //                 }} onChange={handleChangeValue} required />
+        //             </FormControl>
+        //             <FormControl sx={{ m: 1, with: "100%" }}>
+        //                 <div {...getRootProps()}>
+        //                     <input {...getInputProps()} />
+        //                     {
+        //                         isDragActive ?
+        //                             <p>Drop the files here ...</p> :
+        //                             <p>Drag 'n' drop some files here, or click to select files</p>
+        //                     }
+        //                 </div>
+        //                 <img className='preview-img' src={preview} height="200" />
+        //             </FormControl>
+        //             <div className='group-btn'>
+        //                 <Button onClick={() => setIsOpenProduct(false)} variant="contained">Cancel</Button>
+        //                 <Button type='submit' variant="contained">Create</Button>
+        //             </div>
+        //         </form>
+        //     </Box>
+        // </Modal >
     )
 }
 

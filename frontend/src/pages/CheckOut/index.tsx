@@ -13,6 +13,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
+import { calculateCartTotal } from '../../utils/cart';
 import './style.css'
 
 const style = {
@@ -46,22 +47,7 @@ const Index = () => {
             setShoppingCart(JSON.parse(savedCartItems));
         }
     }, [])
-    // const calculateCartTotal = () => {
-    //     const cartItems = cart.products;
-    //     console.log(cartItems)
 
-    //     let total = 0;
-
-    //     // cartItems.map((item: { price: number; quantity: number; }) => {
-    //     //     // total += item.price * item.quantity;
-
-    //     // });
-    //     console.log(total)
-    //     total = parseFloat(total.toFixed(2));
-    //     return total
-    //     // localStorage.setItem(CART_TOTAL, total);
-    // };
-    // calculateCartTotal()
     const Product = ({ id, name, price, imageUrl, quantity }: any) => {
         return (
             <div className='checkout-review-info flex'>
@@ -102,8 +88,6 @@ const Index = () => {
                     <div className='checkout-delivery-information'>
                         <p>Address:</p>
                         <p>{user.street} {user.city} {user.zipCode}</p>
-
-                        {/* <p>{`4140 Parker Rd. Allentown, New Mexico 31134`}</p> */}
                     </div>
                     <div className='checkout-delivery-information'>
                         <p>City:</p>
@@ -169,30 +153,27 @@ const Index = () => {
                             <input type="number" placeholder='000' />
                         </div>
                     </div>
-                    {<>
-                        <div className='checkout-recipe'>
-                            <p>Sub Total</p>
-                            <p>$549.00</p>
-                        </div>
-                        <div className='checkout-recipe'>
-                            <p>Tax(10%)</p>
-                            <p>$54.90</p>
-                        </div>
-                        <div className='checkout-recipe'>
-                            <p>Coupon Discount</p>
-                            <p>-$54.90</p>
-                        </div>
-                        <div className='checkout-recipe'>
-                            <p>Shipping Cost</p>
-                            <p>-$0.00</p>
-                        </div>
-                        <hr />
-                        <div className='checkout-recipe'>
-                            <p>Sub Total</p>
-                            <p>{shoppingCart.totalPrice}</p>
-                        </div>
-                    </>}
-                    {/* <button className='checkout-btn'>Pay $494.10</button> */}
+                    <div className='checkout-recipe'>
+                        <p>Sub Total</p>
+                        <p>$549.00</p>
+                    </div>
+                    <div className='checkout-recipe'>
+                        <p>Tax(10%)</p>
+                        <p>$54.90</p>
+                    </div>
+                    <div className='checkout-recipe'>
+                        <p>Coupon Discount</p>
+                        <p>-$54.90</p>
+                    </div>
+                    <div className='checkout-recipe'>
+                        <p>Shipping Cost</p>
+                        <p>-$0.00</p>
+                    </div>
+                    <hr />
+                    <div className='checkout-recipe'>
+                        <p>Sub Total</p>
+                        <p>{shoppingCart.totalPrice}</p>
+                    </div>
                     <Button sx={{
                         borderRadius: 50,
                         background: "#003a24",

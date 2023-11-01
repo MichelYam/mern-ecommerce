@@ -13,6 +13,7 @@ import { setToken } from './utils/TokenStorage';
 import Profile from './pages/Profile';
 import Forgot from './pages/Forgot';
 import ResetPassword from './pages/ResetPassword';
+import Cart from './pages/Cart';
 
 
 // Authentication
@@ -41,7 +42,8 @@ function App() {
             <Route path="/reset/:token" element={<ResetPassword />} />
             <Route path="/account" element={<Profile />} />
             <Route path="/products/:id" element={<Product />} />
-            <Route path="/checkout" element={<CheckOut />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/cart/checkout" element={<CheckOut />} />
             <Route path='/404' element={<Error />} />
             <Route path="*" element={<Error />} />
           </Routes>
