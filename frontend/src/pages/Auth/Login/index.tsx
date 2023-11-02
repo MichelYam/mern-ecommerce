@@ -1,41 +1,42 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import "./style.css";
-import { useLoginUserMutation } from '../../../service/api';
+
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { saveStorage } from '../../../utils/TokenStorage';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import { useLoginUserMutation } from '../../../redux/api/api';
+import { setUser } from '../../../redux/features/userSlice';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import { toast } from 'react-toastify';
+
 const Index = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
-
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+    remember: false
+  })
   const [loginUser, { isLoading, isSuccess, isError, error }] = useLoginUserMutation()
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  // if (userToken) return <Navigate to="/dashboard" />;
-
-  const handleRememberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRemember(!remember);
-  }
+  const dispatch = useAppDispatch();
   const navigate = useNavigate()
+  const user = useAppSelector((state) => state.user);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setData({
+      ...data,
+      [event.target.name]: event.target.name === "remember" ? !data.remember : event.target.value,
+    })
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginUser({ email, password })
+    loginUser(data)
       .then((response) => {
         // console.log("response", response);
         if ('data' in response) {
-          navigate("/")
-          saveStorage(response.data.token, remember)
+          saveStorage(response.data.token, data.remember)
+          dispatch(setUser(response.data as any))
         } else {
           // response is of type '{ error: FetchBaseQueryError | SerializedError; }'
           console.log(response.error);
@@ -44,10 +45,17 @@ const Index = () => {
       .catch((err) => {
         console.error("err", err);
       });
-
   };
 
-  if (localStorage.getItem("token")) return <Navigate to="/" />;
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("User Login Successfully")
+      navigate(-1)
+    }
+  }, [isSuccess])
+
+  if (user) return <Navigate to="/" />;
+
   return (
     <div className="container-login">
       <div className="form-container">
@@ -56,26 +64,28 @@ const Index = () => {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
+            name='email'
             placeholder="Email"
-            value={email}
-            onChange={handleEmailChange}
+            value={data.email}
+            onChange={handleChange}
             required
           />
           <input
             type="password"
+            name='password'
             placeholder="Password"
-            value={password}
-            onChange={handlePasswordChange}
+            value={data.password}
+            onChange={handleChange}
             required
           />
           <FormGroup>
-            <FormControlLabel control={<Checkbox id='remember' name='remember' onChange={handleRememberChange} />} label="Remember me" />
+            <FormControlLabel control={<Checkbox id='remember' name='remember' onChange={handleChange} />} label="Remember me" />
           </FormGroup>
           <button className='login-btn' type="submit">Login</button>
-          <Link to={'/forgot'}>  Forgot Password? </Link>
+          <Link to={'/forgot'}>  Forgot Password ? </Link>
         </form>
         <hr />
-        <Link to={"/register"} className='message-help'>Vous n'avez pas de compte ? cliquez ici</Link>
+        <Link to={"/register"} className='message-help'>You do not have an account ?</Link>
 
       </div>
     </div>

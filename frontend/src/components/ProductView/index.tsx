@@ -1,10 +1,11 @@
 import React from 'react'
-import { IProduct } from '../../service/api'
+
 import './style.css'
 import { Link } from 'react-router-dom'
 import { TbTruckDelivery } from 'react-icons/tb'
 import { PiShoppingBagOpenDuotone } from 'react-icons/pi'
 import InputNumber from '../InputNumber'
+import { IProduct } from '../../redux/api/api'
 interface Props {
     addProductToCart: (product?: IProduct) => void
     product?: IProduct

@@ -1,4 +1,4 @@
-import { ICart } from "../service/api";
+
 /**
  * 
  * @param cart Array of objet

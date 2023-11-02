@@ -6,7 +6,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 
 import './style.css'
 import { Link } from 'react-router-dom';
-import { Categories, useAddProductMutation, useGetCategoriesQuery, ICart, IProduct } from '../../service/api';
+
 import DropdownMenu from '../DropdownMenu';
 import jwt_decode from 'jwt-decode';
 
@@ -26,6 +26,7 @@ import {
     PaletteColorOptions,
     ThemeProvider,
 } from '@mui/material/styles';
+import { Categories, ICart, useAddProductMutation, useGetCategoriesQuery } from '../../redux/api/api';
 const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -203,15 +204,13 @@ const Index = () => {
                                         'aria-labelledby': 'basic-button',
                                     }}
                                 >
-                                    <MenuItem onClick={handleUserClose}>Profile</MenuItem>
-                                    <MenuItem onClick={handleUserClose}><Link to={"/account"}>My account</Link></MenuItem>
-                                    {/* <MenuItem onClick={() => setIsOpenProduct(true)}>Add Product</MenuItem> */}
+                                    <MenuItem onClick={handleUserClose}><Link to={"/account"}>Profile</Link></MenuItem>
                                     <MenuItem onClick={logOut}>Logout</MenuItem>
                                 </Menu>
                             </div>
                             :
                             <Link to={'/login'}>
-                                <Button color='black' variant="outlined" startIcon={<GoPerson />}>
+                                <Button color='black' variant="text" startIcon={<GoPerson />}>
                                     Account
                                 </Button>
                             </Link>}
@@ -222,48 +221,7 @@ const Index = () => {
                                 Cart
                             </Button>
                         </Link>
-                        {/* <Button
-                        id="basic-button"
-                        aria-controls={openCart ? 'basic-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={openCart ? 'true' : undefined}
-                        onClick={handleCartClick}
-                    >
-                        <TbShoppingCartPlus />
-                        <span>Cart</span>
-                    </Button> */}
                     </div>
-                    {/* {isOpen && */}
-                    {/* <Menu
-                    id="basic-menu"
-                    anchorEl={anchorCart}
-                    open={openCart}
-                    onClose={handleCartClose}
-                    MenuListProps={{
-                        'aria-labelledby': 'basic-button',
-                    }}
-                >
-                    <MenuItem onClick={logOut}>Logout</MenuItem>
-                    <div className="shopping-cart">
-                        <div className="shopping-cart-header">
-                            <i className="fa fa-shopping-cart cart-icon"></i><span className="badge">{cart.length}</span>
-                            <div className="shopping-cart-total">
-                                <span className="lighter-text">Total:</span>
-                                <span className="main-color-text"> ${calculateCartTotal(cart)}</span>
-                            </div>
-                        </div>
-
-                        <ul className="shopping-cart-items">
-                            {
-                                cart.length > 0 ? cart && cart.map((item: IProduct, index: number) =>
-                                    <ShoppingCart key={index} {...item} />
-                                ) :
-                                    <p> Your shopping cart is empty</p>
-                            }
-                        </ul>
-                        <Link to="/cart" className="button">Cart</Link>
-                    </div>
-                </Menu> */}
                 </div>
             </nav >
         </ThemeProvider>

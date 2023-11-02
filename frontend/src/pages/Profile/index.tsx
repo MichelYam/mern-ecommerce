@@ -9,9 +9,10 @@ import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Input from '@mui/material/Input';
 import TextField from '@mui/material/TextField';
-import { useGetUserQuery, useUpdateUserMutation, userData } from '../../service/api';
+
 import moment from 'moment';
 import { FiEdit } from 'react-icons/fi'
+import { useGetUserQuery, useUpdateUserMutation } from '../../redux/api/api';
 
 
 const Index = () => {

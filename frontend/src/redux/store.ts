@@ -1,16 +1,17 @@
 import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit"
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import { productApi } from "../service/api";
-// import { userApi } from "../service/user";
+import { api } from "../redux/api/api";
+import userReducer from './features/userSlice';
 
 const store = configureStore({
     reducer: {
         // [userApi.reducerPath]: userApi.reducer,
-        [productApi.reducerPath]: productApi.reducer,
+        [api.reducerPath]: api.reducer,
+        user: userReducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({}).concat([productApi.middleware]),
+        getDefaultMiddleware({}).concat([api.middleware]),
 
 })
 

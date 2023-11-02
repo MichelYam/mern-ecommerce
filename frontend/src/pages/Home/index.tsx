@@ -1,25 +1,21 @@
 import React, { useMemo, useState } from 'react'
 import Product from '../../components/Product'
 import Hero from '../../components/Hero'
-import { IProduct, ProductData, cartData, useUpdateCartMutation, useGetProductsQuery, useGetCartQuery } from '../../service/api'
+
 import jwt_decode from 'jwt-decode';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 import ProductList from '../../components/ProductList';
+import { IProduct, ProductData, useGetProductsQuery, useUpdateCartMutation } from '../../redux/api/api';
+import { useAppSelector } from '../../redux/store';
 const Index = () => {
+
     const [selectedFilter, setSelectedFilter] = useState("");
     const { data: products, isLoading, isSuccess, isError, error } = useGetProductsQuery<ProductData>("undefined");
-    const [updateCart] = useUpdateCartMutation()
-    const token = localStorage.getItem('token')
-    // console.log(products)
-    let decodedToken: any = {}
-    if (token !== null) {
-        decodedToken = jwt_decode(token);
-        // console.log(decodedToken.sub);
-    }
-
+    const [updateCart] = useUpdateCartMutation();
+  
     // const { data: cart } = useGetCartQuery<cartData>("");
     if (isLoading) return <div>
         <Skeleton />

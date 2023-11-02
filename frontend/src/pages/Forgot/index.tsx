@@ -2,9 +2,10 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useForgotPasswordMutation } from '../../service/api'
+
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import { useForgotPasswordMutation } from '../../redux/api/api';
 
 const Index = () => {
   const [forgotPassword, { data: message }] = useForgotPasswordMutation()

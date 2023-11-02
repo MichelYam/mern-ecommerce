@@ -1,28 +1,20 @@
 import React, { useState } from 'react'
 import "./style.css";
+import { Navigate } from 'react-router-dom';
+import { useAppSelector } from '../../../redux/store';
 
 const Index = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value);
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  const handleConfirmPasswordChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setConfirmPassword(e.target.value);
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  })
+  const user = useAppSelector((state) => state.user);
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setData({
+      ...data,
+      [event.target.name]: event.target.value,
+    })
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -31,37 +23,38 @@ const Index = () => {
     console.log("Register form submitted");
   };
 
+  if (user) return <Navigate to="/" />;
   return (
     <div className="container-register">
       <div className="form-container">
         <h2>Register</h2>
         <form onSubmit={handleSubmit}>
-          <input
+          {/* <input
             type="text"
             placeholder="Username"
-            value={username}
-            onChange={handleUsernameChange}
+            value={data.username}
+            onChange={handleChange}
             required
-          />
+          /> */}
           <input
             type="email"
             placeholder="Email"
-            value={email}
-            onChange={handleEmailChange}
+            value={data.email}
+            onChange={handleChange}
             required
           />
           <input
             type="password"
             placeholder="Password"
-            value={password}
-            onChange={handlePasswordChange}
+            value={data.password}
+            onChange={handleChange}
             required
           />
           <input
             type="password"
             placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
+            value={data.confirmPassword}
+            onChange={handleChange}
             required
           />
           <button className='register-btn' type="submit">Register</button>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import jwt_decode from 'jwt-decode';
-import { useGetUserQuery } from '../../service/api';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -15,6 +15,7 @@ import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import { calculateCartTotal } from '../../utils/cart';
 import './style.css'
+import { useGetUserQuery } from '../../redux/api/api';
 
 const style = {
     position: 'absolute' as 'absolute',

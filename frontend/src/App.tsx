@@ -14,22 +14,23 @@ import Profile from './pages/Profile';
 import Forgot from './pages/Forgot';
 import ResetPassword from './pages/ResetPassword';
 import Cart from './pages/Cart';
+import { ToastContainer } from 'react-toastify';
+import { useAppDispatch } from './redux/store';
+import { setUser } from './redux/features/userSlice';
 
 
-// Authentication
-const token = localStorage.getItem('token');
-
-if (token) {
-  // authenticate api authorization
-  setToken(token);
-
-  // authenticate routes
-  // store.dispatch({ type: SET_AUTH });
-}
 function App() {
+  // Authentication
+  // const dispatch = useAppDispatch()
+  // const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
+  // if (token) {
+  //   dispatch(setUser(token))
+  // }
   return (
     <div className='container'>
       <BrowserRouter>
+        <ToastContainer />
         <Header />
         <main>
           <Routes>

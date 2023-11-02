@@ -1,8 +1,9 @@
 import React from 'react'
 import { productType } from '../../interface'
 import './style.css'
-import { IProduct } from '../../service/api'
+
 import { Link } from 'react-router-dom'
+import { IProduct } from '../../redux/api/api'
 
 interface IProps {
     addProductToCart: (product: IProduct) => void

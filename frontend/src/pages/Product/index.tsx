@@ -2,8 +2,9 @@ import React, { useEffect } from 'react'
 import ProductView from '../../components/ProductView'
 import { useNavigate, useParams } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
+import { cartData, useGetCartQuery, useGetProductByIdQuery, useUpdateCartMutation } from '../../redux/api/api';
 
-import { IProduct, ProductData, cartData, useGetProductByIdQuery, useGetCartQuery, useUpdateCartMutation } from '../../service/api'
+
 
 const Index = () => {
     const { id } = useParams(); //get id form url

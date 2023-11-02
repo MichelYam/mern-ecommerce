@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { RootState } from "../redux/store"
-import { getTokenFromLocalStorage } from "../utils/TokenStorage"
+// import { RootState } from "../redux/store"
+import { getTokenFromLocalStorage } from "../../utils/TokenStorage"
+import { setUser } from "../features/userSlice"
+
 // import { createProduct, deleteProduct, getMyProducts } from "./productAction"
 
 export interface IProduct {
@@ -60,6 +62,7 @@ export interface IUser {
     firstName?: string
     lastName?: string
     password?: string
+    email?: string
     role: string
     country: string
     zipCode: string
@@ -68,7 +71,7 @@ export interface IUser {
     city: string
     street: string
     avatar: string
-    email?: string
+    remember?: boolean
     type?: 'User'
 }
 export interface userData {
@@ -80,7 +83,7 @@ export interface userData {
     isError: boolean
 }
 
-export const productApi = createApi({
+export const api = createApi({
     reducerPath: "productApi",
     baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3001/api/", }),
     // baseQuery: fetchBaseQuery({ baseUrl: "https://fakestoreapi.com/" }),
@@ -245,4 +248,4 @@ export const { useGetProductsQuery,
     useGetCartQuery,
     useCreateCartMutation,
     useUpdateCartMutation
-} = productApi;
+} = api;
