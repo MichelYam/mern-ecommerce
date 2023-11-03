@@ -27,6 +27,7 @@ import {
     ThemeProvider,
 } from '@mui/material/styles';
 import { Categories, ICart, useAddProductMutation, useGetCategoriesQuery } from '../../redux/api/api';
+import { useAppSelector } from '../../redux/store';
 const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -83,6 +84,8 @@ const Index = () => {
     const openUser = Boolean(anchorUser);
     const openCart = Boolean(anchorCart);
 
+    const { isAuthenticated } = useAppSelector((state) => state.user);
+
     const { palette } = createTheme();
     const { augmentColor } = palette;
     const createColor = (mainColor: string) => augmentColor({ color: { main: mainColor } });
@@ -99,12 +102,14 @@ const Index = () => {
     // if (token !== null) {
     //     decodedToken = jwt_decode(token);
     // }
+    useEffect(() => {
+
+    }, [])
 
     useEffect(() => {
         const savedCartItems = localStorage.getItem("cart_items");
         if (savedCartItems) {
             setCart(JSON.parse(savedCartItems));
-            console.log("test")
         }
     }, [])
 
@@ -180,7 +185,7 @@ const Index = () => {
                 </div>
                 <div className='nav-right'>
                     <div className='nav-user-status'>
-                        {token ?
+                        {isAuthenticated ?
                             <div className="dropdown-menu">
                                 <Button
                                     id="basic-button"

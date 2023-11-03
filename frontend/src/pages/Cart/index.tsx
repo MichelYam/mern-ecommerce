@@ -15,7 +15,8 @@ import Typography from '@mui/material/Typography';
 
 //CSS
 import './style.css'
-import { useCreateCartMutation } from '../../redux/api/api';
+import { useCreateCartMutation, useGetCartQuery } from '../../redux/api/api';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -27,19 +28,28 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
+const getCartItems = (cartItems: any[]) => {
+    const newCartItems: any = [];
+    cartItems.map(item => {
+        const newItem: any = {};
+        newItem.quantity = item.quantity;
+        newItem.price = item.price;
+        newItem.taxable = item.taxable;
+        newItem.product = item._id;
+        newCartItems.push(newItem);
+    });
+    console.log("newCartItems", newCartItems)
+    return newCartItems;
+};
 
 const Index = () => {
 
     const [shoppingCart, setShoppingCart] = useState<any>([]);
     const [createCart] = useCreateCartMutation()
-    const token = localStorage.getItem('token')
     const navigate = useNavigate();
-    // let decodedToken: any = {}
-    // if (token !== null) {
-    //     decodedToken = jwt_decode(token);
-    // }
+    const { isAuthenticated, userInfo } = useAppSelector((state) => state.user);
     const savedCartItems = localStorage.getItem("cart_items");
-
+    const { data: cart } = useGetCartQuery(userInfo?.id)
     useEffect(() => {
         if (savedCartItems) {
             setShoppingCart(JSON.parse(savedCartItems));
@@ -48,25 +58,28 @@ const Index = () => {
 
     const handleCheckout = () => {
         navigate('/login')
-
     };
     const handleCheckoutSucess = () => {
+        // if(cartExist){
+        // update Cart 
+        // }else{
+        //      if (savedCartItems) {
+        //     const data = JSON.parse(savedCartItems)
+        //     const products = getCartItems(data)
+        //     createCart(products)
+        //     navigate("/cart/checkout")
+        // }
+        // }
         if (savedCartItems) {
-            createCart(JSON.parse(savedCartItems)).then((response) => {
-                // console.log("response", response);
-                if ('data' in response) {
-                    navigate("/checkout")
-                } else {
-                    // response is of type '{ error: FetchBaseQueryError | SerializedError; }'
-                    console.log(response.error);
-                }
-            })
-                .catch((err) => {
-                    console.error("err", err);
-                });
+            const data = JSON.parse(savedCartItems)
+            const products = getCartItems(data)
+            createCart(products)
+            navigate("/cart/checkout")
         }
     };
     {/* <Product key={`cart-product-${index}`} {...item} /> */ }
+    console.log("cart", cart)
+
     return (
         <Card sx={{ minWidth: 275 }}>
             <CardContent>
@@ -98,7 +111,7 @@ const Index = () => {
                             <span> ${calculateCartTotal(shoppingCart)}</span>
                         </div>
                         <CardActions>
-                            {token ? <Button onClick={handleCheckoutSucess} variant="outlined">Checkout</Button> :
+                            {isAuthenticated ? <Button onClick={handleCheckoutSucess} variant="outlined">Checkout</Button> :
                                 <Button onClick={handleCheckout} variant="outlined">Checkout</Button>
                             }
                         </CardActions>

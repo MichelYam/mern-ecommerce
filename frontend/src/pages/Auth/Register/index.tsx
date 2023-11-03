@@ -9,7 +9,7 @@ const Index = () => {
     password: "",
     confirmPassword: "",
   })
-  const user = useAppSelector((state) => state.user);
+  const { isAuthenticated } = useAppSelector((state) => state.user);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setData({
       ...data,
@@ -23,7 +23,7 @@ const Index = () => {
     console.log("Register form submitted");
   };
 
-  if (user) return <Navigate to="/" />;
+  if (isAuthenticated) return <Navigate to="/" />;
   return (
     <div className="container-register">
       <div className="form-container">

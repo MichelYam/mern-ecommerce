@@ -85,7 +85,17 @@ export interface userData {
 
 export const api = createApi({
     reducerPath: "productApi",
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3001/api/", }),
+    baseQuery: fetchBaseQuery({
+        baseUrl: "http://localhost:3001/api/",
+        prepareHeaders: (headers, { getState }: any) => {
+            const token = getState().user.userToken
+            if (token) {
+                // include token in req header
+                headers.set('authorization', `Bearer ${token}`)
+                return headers
+            }
+        },
+    }),
     // baseQuery: fetchBaseQuery({ baseUrl: "https://fakestoreapi.com/" }),
     endpoints: (builder) => ({
         // Product endpoints
@@ -126,6 +136,7 @@ export const api = createApi({
                 body: id
             })
         }),
+
         //user endpoints
         getUsers: builder.query<IUser[], void>({
             query: () => 'user',
@@ -195,10 +206,10 @@ export const api = createApi({
 
         }),
         createCart: builder.mutation<ICart, Partial<ICart>>({
-            query: (Cart) => ({
-                url: 'add',
+            query: (cart) => ({
+                url: 'cart/add',
                 method: "POST",
-                body: Cart,
+                body: cart,
                 headers: {
                     Authorization: `Bearer ${getTokenFromLocalStorage()}`,
                 },

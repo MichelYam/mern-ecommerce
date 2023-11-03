@@ -39,8 +39,8 @@ export const createCart: RequestHandler = async (req: any, res: any) => {
   try {
     const user = req.user._id;
     const items = req.body;
-
-    const products = store.caculateItemsSalesTax([items]);
+    const products = store.caculateItemsSalesTax(items);
+    // console.log("products", products)
 
 
     const cart = new Cart({

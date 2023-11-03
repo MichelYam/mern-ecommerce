@@ -20,7 +20,7 @@ const Index = () => {
   const [loginUser, { isLoading, isSuccess, isError, error }] = useLoginUserMutation()
   const dispatch = useAppDispatch();
   const navigate = useNavigate()
-  const user = useAppSelector((state) => state.user);
+  const {isAuthenticated} = useAppSelector((state) => state.user);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setData({
@@ -54,7 +54,7 @@ const Index = () => {
     }
   }, [isSuccess])
 
-  if (user) return <Navigate to="/" />;
+  if (isAuthenticated) return <Navigate to="/" />;
 
   return (
     <div className="container-login">

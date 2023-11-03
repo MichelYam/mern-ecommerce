@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -16,6 +16,7 @@ import TextField from '@mui/material/TextField';
 import { calculateCartTotal } from '../../utils/cart';
 import './style.css'
 import { useGetUserQuery } from '../../redux/api/api';
+import { useAppSelector } from '../../redux/store';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -34,18 +35,14 @@ const Index = () => {
     const [shoppingCart, setShoppingCart] = useState<any>([]);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const token = localStorage.getItem('token')
-
-    // let decodedToken: any = {}
-    // if (token !== null) {
-    //     decodedToken = jwt_decode(token);
-    // }
-    // const { data: cart } = useGetCartQuery<cartData>("");
+    const { isAuthenticated } = useAppSelector((state) => state.user);
     const { data: user, isLoading, isSuccess, isError, error } = useGetUserQuery("")
+    
     useEffect(() => {
         const savedCartItems = localStorage.getItem("cart_items");
         if (savedCartItems) {
             setShoppingCart(JSON.parse(savedCartItems));
+            console.log(JSON.parse(savedCartItems))
         }
     }, [])
 
@@ -68,6 +65,9 @@ const Index = () => {
             </div>
         )
     }
+
+    if (!isAuthenticated) return <Navigate to="/login" />;
+
     return (
         <div className='checkout'>
             <div className='checkout-product'>
@@ -173,7 +173,7 @@ const Index = () => {
                     <hr />
                     <div className='checkout-recipe'>
                         <p>Sub Total</p>
-                        <p>{shoppingCart.totalPrice}</p>
+                        <p>${calculateCartTotal(shoppingCart)}</p>
                     </div>
                     <Button sx={{
                         borderRadius: 50,
@@ -184,7 +184,7 @@ const Index = () => {
                             boxShadow: 'none',
                             backgroundColor: '#3c52b2',
                         }
-                    }} onClick={handleOpen}>Pay $494.10</Button>
+                    }} onClick={handleOpen}>Pay ${calculateCartTotal(shoppingCart)}</Button>
                     <Modal
                         open={open}
                         onClose={handleClose}
