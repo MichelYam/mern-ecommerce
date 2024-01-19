@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import jwt_decode from 'jwt-decode';
-
+import StripeCheckout from 'react-stripe-checkout';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -17,7 +17,9 @@ import { calculateCartTotal } from '../../utils/cart';
 import './style.css'
 import { useGetUserQuery } from '../../redux/api/api';
 import { useAppSelector } from '../../redux/store';
-
+import { PayPalScriptProvider, PayPalButtons, ReactPayPalScriptOptions } from "@paypal/react-paypal-js";
+import axios from "axios"
+import Stripe from '../../components/Stripe';
 const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -30,21 +32,34 @@ const style = {
     p: 4,
 };
 
+const initialOptions = {
+    clientId: 'AR99ZSOFEFPBV7SFm6xp4kDZWnQTWkJ_A7ec62ae6pjtjHBknwdT1R1kw9PyqoHu9yYmsrAtuQFaT4hh',
+    currency: "USD",
+    intent: "capture",
+};
+
 const Index = () => {
     const [open, setOpen] = useState(false);
     const [shoppingCart, setShoppingCart] = useState<any>([]);
+    const [success, setSuccess] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const { isAuthenticated } = useAppSelector((state) => state.user);
     const { data: user, isLoading, isSuccess, isError, error } = useGetUserQuery("")
-    
+
     useEffect(() => {
         const savedCartItems = localStorage.getItem("cart_items");
         if (savedCartItems) {
             setShoppingCart(JSON.parse(savedCartItems));
-            console.log(JSON.parse(savedCartItems))
         }
     }, [])
+
+    useEffect(() => {
+        if (success) {
+            alert("Payment successful!!");
+            console.log('Order successful . Your order id is--');
+        }
+    }, [success]);
 
     const Product = ({ id, name, price, imageUrl, quantity }: any) => {
         return (
@@ -67,7 +82,12 @@ const Index = () => {
     }
 
     if (!isAuthenticated) return <Navigate to="/login" />;
-
+    // check Approval
+    const onApprove = async (data: any, actions: any) => {
+        const details = await actions.order.capture();
+        const { payer } = details;
+        setSuccess(true);
+    };
     return (
         <div className='checkout'>
             <div className='checkout-product'>
@@ -119,7 +139,16 @@ const Index = () => {
                 <h3>Payment Details</h3>
                 <hr />
                 <div className='checkout-payments-option'>
-                    <FormControl>
+                    <PayPalScriptProvider options={initialOptions}>
+                        <PayPalButtons style={{ layout: "vertical" }} onApprove={onApprove} />
+                    </PayPalScriptProvider>
+                    {/* <StripeCheckout
+                        stripeKey={STRIPE_PUBLISHABLE}
+                        // amount={"amount * 100"}
+                        token={handleStripe}
+                        currency='usd'
+                    /> */}
+                    {/* <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label"></FormLabel>
                         <RadioGroup
                             aria-labelledby="demo-radio-buttons-group-label"
@@ -131,8 +160,8 @@ const Index = () => {
                             <FormControlLabel value="paypal" control={<Radio />} label="Paypal" />
                             <FormControlLabel value="creditCard" control={<Radio />} label="Credit or Debit card" />
                         </RadioGroup>
-                    </FormControl>
-                    <div className='control-input'>
+                    </FormControl> */}
+                    {/* <div className='control-input'>
                         <label htmlFor="">Email*</label>
                         <input type="text" placeholder='Type here...' />
                     </div>
@@ -153,7 +182,7 @@ const Index = () => {
                             <label htmlFor="">CVC</label>
                             <input type="number" placeholder='000' />
                         </div>
-                    </div>
+                    </div> */}
                     <div className='checkout-recipe'>
                         <p>Sub Total</p>
                         <p>$549.00</p>

@@ -11,12 +11,15 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-
 //CSS
 import './style.css'
-import { useCreateCartMutation, useGetCartQuery } from '../../redux/api/api';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { useCreateCartMutation, useGetUserQuery } from '../../redux/api/api';
+import { useAppSelector } from '../../redux/store';
+import { loadStripe } from '@stripe/stripe-js';
+import axios from 'axios';
+
+// const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY as string)
+const stripePromise = loadStripe("pk_test_51OWf4QFj5EZEN2h0IWKDQa63z4LiwEURuSOw8xAL5lJ7lyWAsgXXmD984sT7SnKpfuBKj9r7jCxxh0gjOCgw2CZr00khJw9eIU")
 const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -34,11 +37,11 @@ const getCartItems = (cartItems: any[]) => {
         const newItem: any = {};
         newItem.quantity = item.quantity;
         newItem.price = item.price;
+        newItem.description = item.description;
         newItem.taxable = item.taxable;
-        newItem.product = item._id;
+        newItem._id = item._id;
         newCartItems.push(newItem);
     });
-    console.log("newCartItems", newCartItems)
     return newCartItems;
 };
 
@@ -47,43 +50,54 @@ const Index = () => {
     const [shoppingCart, setShoppingCart] = useState<any>([]);
     const [createCart] = useCreateCartMutation()
     const navigate = useNavigate();
-    const { isAuthenticated, userInfo } = useAppSelector((state) => state.user);
+    const { isAuthenticated } = useAppSelector((state) => state.user);
+    const { data: user, isLoading, isSuccess, isError, error } = useGetUserQuery("")
+
+    // Load shoppingCart from local storage on app startup
     const savedCartItems = localStorage.getItem("cart_items");
-    const { data: cart } = useGetCartQuery(userInfo?.id)
     useEffect(() => {
         if (savedCartItems) {
             setShoppingCart(JSON.parse(savedCartItems));
         }
     }, [])
 
+    // Update local storage whenever shoppingCart change
+    useEffect(() => {
+        localStorage.setItem('cart_items', JSON.stringify(shoppingCart));
+    }, [shoppingCart]);
+
     const handleCheckout = () => {
         navigate('/login')
     };
-    const handleCheckoutSucess = () => {
-        // if(cartExist){
-        // update Cart 
-        // }else{
-        //      if (savedCartItems) {
-        //     const data = JSON.parse(savedCartItems)
-        //     const products = getCartItems(data)
-        //     createCart(products)
-        //     navigate("/cart/checkout")
-        // }
-        // }
-        if (savedCartItems) {
-            const data = JSON.parse(savedCartItems)
-            const products = getCartItems(data)
+    const handleCheckoutSucess = async () => {
+        if (shoppingCart) {
+            const products = getCartItems(shoppingCart)
             createCart(products)
-            navigate("/cart/checkout")
+
+            const stripe = await stripePromise
+
+            const checkoutSession = await axios.post("http://localhost:3001/api/stripe/pay", {
+                items: shoppingCart,
+                email: user?.email
+            })
+
+            const result = await stripe?.redirectToCheckout({
+                sessionId: checkoutSession.data.id
+            })
+
+            if (result?.error) alert(result.error.message)
+
         }
     };
-    {/* <Product key={`cart-product-${index}`} {...item} /> */ }
-    console.log("cart", cart)
 
+    const deleteItem = (id: any) => {
+        const updateCart = shoppingCart.filter((item: { _id: any; }) => item._id !== id)
+        setShoppingCart(updateCart);
+
+    }
     return (
         <Card sx={{ minWidth: 275 }}>
             <CardContent>
-                {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom> */}
                 <div className='cart-review'>
                     <h2>Review Item And Shipping</h2>
                     {shoppingCart && shoppingCart.map((item: any, index: number) => (
@@ -95,7 +109,7 @@ const Index = () => {
                                 <div className='product-cart-title'>
                                     <h3>{item.name}</h3>
                                     <p>Color: Pink</p>
-                                    <span className='product'>delete</span>
+                                    <span className='product' onClick={() => deleteItem(item._id)}>delete</span>
                                 </div>
                             </div>
                             <div className='cart-product-price'>
@@ -119,11 +133,6 @@ const Index = () => {
                     </div>
                 </div >
             </CardContent>
-            <CardActions>
-                {/* <Button size="small">Proceed to checkout</Button> */}
-                {/* <div>Subtotal ({shoppingCart.length} {shoppingCart.length > 1 ? "products" : "product"}) : ${calculateCartTotal(shoppingCart)} </div>
-                <Link to={"/checkout"}>Checkout</Link> */}
-            </CardActions>
         </Card>
     )
 }

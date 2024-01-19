@@ -7,6 +7,7 @@ import keys from './config/keys';
 import userRoutes from "./routes/api/user";
 import productRoutes from "./routes/api/product";
 import cartRoutes from "./routes/api/cart";
+import stripeRoutes from "./routes/api/stripe";
 import setupDB from './config/db';
 import helmet from "helmet";
 import cors from "cors";
@@ -36,6 +37,7 @@ app.get("/", async (req: Request, res: Response) => {
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/stripe", stripeRoutes);
 // app.use(routes);
 
 setupDB();

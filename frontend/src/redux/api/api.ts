@@ -239,6 +239,19 @@ export const api = createApi({
                 body: productId
             })
         }),
+
+        //stripe
+        checkoutStripeSession: builder.mutation({
+            query: (data) => ({
+                url: 'stripe/pay',
+                method: "POST",
+                body: data,
+                headers: {
+                    Authorization: `Bearer ${getTokenFromLocalStorage()}`,
+                },
+
+            })
+        }),
     }),
 })
 

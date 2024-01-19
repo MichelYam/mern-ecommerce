@@ -17,7 +17,9 @@ import Cart from './pages/Cart';
 import { ToastContainer } from 'react-toastify';
 import { useAppDispatch } from './redux/store';
 import { setUser } from './redux/features/userSlice';
+import Success from './pages/Success';
 
+// require('dotenv').config()
 
 function App() {
   // Authentication
@@ -45,6 +47,7 @@ function App() {
             <Route path="/products/:id" element={<Product />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/cart/checkout" element={<CheckOut />} />
+            <Route path="success" element={<Success />} />
             <Route path='/404' element={<Error />} />
             <Route path="*" element={<Error />} />
           </Routes>

@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import DropdownMenu from '../DropdownMenu';
 import jwt_decode from 'jwt-decode';
 
-import ShoppingCart from '../shoppingCart';
+import ShoppingCart from '../ShoppingCart';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';

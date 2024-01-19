@@ -12,7 +12,6 @@ const Index = () => {
 
     useEffect(() => {
         if (user) dispatch(setUser(user))
-        console.log(user)
     }, [user, dispatch])
 
     return (

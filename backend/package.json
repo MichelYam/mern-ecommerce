@@ -36,6 +36,7 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "randombytes": "^2.1.0",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "stripe": "^14.11.0"
   }
 }
