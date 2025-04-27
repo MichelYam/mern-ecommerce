@@ -1,6 +1,7 @@
 import React from 'react'
 import hero from "../../assets/img/hero.png"
 import './style.css'
+
 const index = () => {
   return (
     <div className="hero">
@@ -9,7 +10,7 @@ const index = () => {
         <button className='hero-btn'>Buy Now</button>
       </div>
       <div className='hero-img'>
-        <img src={hero} alt="hero image" />
+        <img src={hero} alt="hero" />
       </div>
     </div>
   )

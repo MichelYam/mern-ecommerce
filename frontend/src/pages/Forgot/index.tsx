@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom'
 
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
-import { useForgotPasswordMutation } from '../../redux/api/api';
+import { useForgotPasswordMutation } from '../../redux/api/userApi';
+// import { useForgotPasswordMutation } from '../../redux/api/api';
 
 const Index = () => {
   const [forgotPassword, { data: message }] = useForgotPasswordMutation()

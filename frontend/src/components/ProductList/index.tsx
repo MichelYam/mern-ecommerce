@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 
 import Product from '../Product';
-import { IProduct } from '../../redux/api/api';
+import { IProduct } from '../../redux/api/productApi';
 
 interface IProps {
     selectedFilter: string

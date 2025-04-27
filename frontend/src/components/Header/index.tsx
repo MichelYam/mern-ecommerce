@@ -3,11 +3,12 @@ import { BsTelephone } from "react-icons/bs"
 import Nav from '../Nav'
 import { useAppDispatch, useAppSelector } from '../../redux/store'
 import { setUser } from '../../redux/features/userSlice'
-import { useGetUserQuery } from '../../redux/api/api'
+// import { useGetUserQuery } from '../../redux/api/api'
+import { useGetUserQuery } from '../../redux/api/userApi'
 
 const Index = () => {
     const dispatch = useAppDispatch()
-    const { userInfo } = useAppSelector((state) => state.user)
+    // const { userInfo } = useAppSelector((state) => state.user)
     const { data: user, isFetching } = useGetUserQuery('userDetails')
 
     useEffect(() => {

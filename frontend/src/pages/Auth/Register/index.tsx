@@ -9,6 +9,7 @@ const Index = () => {
     password: "",
     confirmPassword: "",
   })
+  
   const { isAuthenticated } = useAppSelector((state) => state.user);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setData({
@@ -29,13 +30,6 @@ const Index = () => {
       <div className="form-container">
         <h2>Register</h2>
         <form onSubmit={handleSubmit}>
-          {/* <input
-            type="text"
-            placeholder="Username"
-            value={data.username}
-            onChange={handleChange}
-            required
-          /> */}
           <input
             type="email"
             placeholder="Email"

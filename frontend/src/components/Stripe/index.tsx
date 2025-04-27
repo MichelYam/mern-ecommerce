@@ -12,9 +12,8 @@ export type StripeTypes = {
         }
     }
 };
-// // Make sure to call `loadStripe` outside of a component’s render to avoid
-// // recreating the `Stripe` object on every render.
-const stripePromise = loadStripe('pk_test_51OWf4QFj5EZEN2h0IWKDQa63z4LiwEURuSOw8xAL5lJ7lyWAsgXXmD984sT7SnKpfuBKj9r7jCxxh0gjOCgw2CZr00khJw9eIU');
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
 
 const Index = (props: { stripePromise: any; }) => {
     const { stripePromise } = props;

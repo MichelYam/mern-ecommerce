@@ -21,11 +21,14 @@ export const clearStorage = () => {
     sessionStorage.removeItem('token');
 };
 /**
- * Remove Token from storage
+ * Get Token from storage
  */
 export const getTokenFromLocalStorage = () => {
-    localStorage.getItem('token');
-    return sessionStorage.getItem('token')?.split(' ')[1];
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    if (token) {
+        return token?.split(' ')[1];
+    }
+    // return sessionStorage.getItem('token')?.split(' ')[1];
 };
 /**
  *

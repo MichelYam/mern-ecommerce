@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from "../../assets/logo/shopping-cart.png"
+import logo from "../../assets/logo/shoppingCart.png"
 import { AiOutlineGift } from 'react-icons/ai';
 import { IoBag } from "react-icons/io5";
 import { SiKlarna } from "react-icons/si";

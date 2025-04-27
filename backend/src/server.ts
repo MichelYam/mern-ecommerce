@@ -19,7 +19,7 @@ const app: Express = express();
 const { port } = keys;
 
 // Handle CORS issues
-app.use(cors())
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -29,6 +29,8 @@ app.use(
         frameguard: true
     })
 );
+
+
 require('./config/passport')(app);
 
 app.get("/", async (req: Request, res: Response) => {
@@ -43,5 +45,5 @@ app.use("/api/stripe", stripeRoutes);
 setupDB();
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`E-commerce app listening on port ${port}`)
 })

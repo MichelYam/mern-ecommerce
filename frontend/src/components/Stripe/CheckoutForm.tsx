@@ -2,7 +2,8 @@ import { CardElement, PaymentElement, useElements, useStripe } from '@stripe/rea
 import { PaymentMethod, StripeError } from '@stripe/stripe-js';
 import { useState } from 'react';
 import { useAppSelector } from '../../redux/store';
-import { useGetUserQuery } from '../../redux/api/api';
+// import { useGetUserQuery } from '../../redux/api/api';
+import { useGetUserQuery } from '../../redux/api/userApi';
 
 interface IPaymentMethod {
     error?: StripeError | undefined;

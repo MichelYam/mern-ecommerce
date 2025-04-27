@@ -102,3 +102,8 @@
     line-height: 24px;
     font-weight: 700;
 }
+
+.btn-delete{
+    background-color: #ff0000;
+    border-radius: 5px;
+}

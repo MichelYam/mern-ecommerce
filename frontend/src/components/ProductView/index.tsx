@@ -1,18 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import './style.css'
 import { Link } from 'react-router-dom'
 import { TbTruckDelivery } from 'react-icons/tb'
 import { PiShoppingBagOpenDuotone } from 'react-icons/pi'
 import InputNumber from '../InputNumber'
-import { IProduct } from '../../redux/api/api'
+import { IProduct } from '../../redux/api/productApi'
 interface Props {
     addProductToCart: (product?: IProduct) => void
-    product?: IProduct
+    product: IProduct
 }
 
 const Index = ({ product, addProductToCart }: Props) => {
+    const [quantity, setQuantity] = useState(1);
 
+    // Fonction pour gérer la mise à jour de la quantité
+    const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = Number(event.target.value);
+        if (value > 0 && value <= 12) {
+            setQuantity(value);
+        }
+    };
     return (
         <>
             <ul className='product-path'>
@@ -41,12 +49,12 @@ const Index = ({ product, addProductToCart }: Props) => {
                     </div>
                     <hr />
                     <div className='product-price'>
-                        <h3>{product?.price}$</h3>
+                        <h3>{product.price}$</h3>
                         <p>Suggested payments with 6 months special financing</p>
                     </div>
                     <hr />
                     <div className='flex product-quantity'>
-                        <InputNumber />
+                        <InputNumber value={quantity} onChange={handleQuantityChange} />
                         <p>Only <span className='product-remaining'>12 Items</span> Left! <br />Don't miss it</p>
                     </div>
                     <div className='product-btn'>

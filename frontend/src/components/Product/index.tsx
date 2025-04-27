@@ -1,9 +1,8 @@
-import React from 'react'
-import { productType } from '../../interface'
-import './style.css'
 
 import { Link } from 'react-router-dom'
-import { IProduct } from '../../redux/api/api'
+import { IProduct } from '../../redux/api/productApi'
+
+import './style.css'
 
 interface IProps {
     addProductToCart: (product: IProduct) => void

@@ -3,12 +3,19 @@ import Hero from '../../components/Hero'
 
 import Skeleton from '@mui/material/Skeleton';
 import ProductList from '../../components/ProductList';
-import { IProduct, ProductData, useGetProductsQuery, useUpdateCartMutation } from '../../redux/api/api';
+// import { IProduct, ProductData, useGetProductsQuery } from '../../redux/api/api';
+import { IProduct, ProductData, useGetProductsQuery } from '../../redux/api/productApi';
+import { useLocation } from 'react-router-dom';
 
 const Index = () => {
-
+    const location = useLocation();
+    const isOnProductPage = location.pathname === '/';
     const [selectedFilter, setSelectedFilter] = useState("");
-    const { data: products, isLoading, isSuccess, isError, error } = useGetProductsQuery<ProductData>("undefined");
+    const { data: products, isLoading, isSuccess, isError, error } = useGetProductsQuery<ProductData>("undefined",{
+        skip: !isOnProductPage, //
+        refetchOnFocus: false,
+        refetchOnReconnect: false,
+    });
 
     if (isLoading) return <div>
         <Skeleton />
@@ -21,10 +28,8 @@ const Index = () => {
         console.log(value);
         setSelectedFilter(value);
     };
-    const test = {
-        quantity: 1
-    }
-    // Handle add item From Cart
+    
+    //ADD item From Cart
     const addProductToCart = (product: IProduct) => {
         const newProduct = { ...product }
         console.log("product", product)
@@ -45,7 +50,7 @@ const Index = () => {
         localStorage.setItem("cart_items", JSON.stringify(newCartItems));
 
     }
-    console.log("env", process.env.STRIPE_PUBLIC_KEY)
+
     return (
         <>
             <Hero />

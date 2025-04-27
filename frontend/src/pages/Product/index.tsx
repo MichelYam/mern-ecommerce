@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react'
 import ProductView from '../../components/ProductView'
-import { useNavigate, useParams } from 'react-router-dom';
-import jwt_decode from 'jwt-decode';
-import { cartData, useGetCartQuery, useGetProductByIdQuery, useUpdateCartMutation } from '../../redux/api/api';
+import { useParams } from 'react-router-dom';
+// import { useGetProductByIdQuery } from '../../redux/api/productApi';
+import { cartData, useGetCartQuery, useUpdateCartMutation } from '../../redux/api/cartApi';
+// import { cartData, useGetCartQuery, useGetProductByIdQuery, useUpdateCartMutation } from '../../redux/api/api';
+import { useGetProductByIdQuery } from '../../redux/api/productApi';
 
 
 
@@ -34,7 +36,9 @@ const Index = () => {
 
     return (
         <>
-            <ProductView {...product} product={product} addProductToCart={() => addProductToCart} />
+            {product && (
+                <ProductView {...product} product={product} addProductToCart={() => addProductToCart} />
+            )}
         </>
     )
 }

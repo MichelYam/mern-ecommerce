@@ -1,24 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
-
 import Avatar from '@mui/material/Avatar';
 import { deepOrange } from '@mui/material/colors';
 import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import FormHelperText from '@mui/material/FormHelperText';
-import Input from '@mui/material/Input';
 import TextField from '@mui/material/TextField';
-
-import moment from 'moment';
+import { Navigate } from 'react-router-dom';
 import { FiEdit } from 'react-icons/fi'
-import { useGetUserQuery, useUpdateUserMutation } from '../../redux/api/api';
+import { useGetUserQuery, useUpdateUserMutation } from '../../redux/api/userApi';
+import { useAppSelector } from '../../redux/store';
+
 
 
 const Index = () => {
-    const { data: user, isLoading, isSuccess, isError, error } = useGetUserQuery("")
+    const { isAuthenticated } = useAppSelector((state) => state.user);
+
+    const { data: user, isLoading, isError, error } = useGetUserQuery("")
     const [updateUser] = useUpdateUserMutation()
     const [edit, setEdit] = useState(false)
+
     const [userData, setUserData] = useState({
         firstName: "",
         lastName: "",
@@ -30,15 +29,15 @@ const Index = () => {
         country: "",
         zipCode: "",
     })
-
     useEffect(() => {
+        // console.log("user", user)
         if (user) {
             setUserData({
                 firstName: user.firstName || "",
                 lastName: user.lastName || "",
                 email: user.email || "",
                 avatar: user.avatar || "",
-                role: user.role,
+                role: user.role || "",
                 city: user.city || "",
                 phone: user.phone || "",
                 country: user.country || "",
@@ -46,6 +45,17 @@ const Index = () => {
             });
         }
     }, [user]);
+
+    if (!isAuthenticated) return <Navigate to="/" />;
+
+    if (isError) {
+        const errorMessage = (error as any)?.data?.message || 'Unable to retrieve user information';
+        return <div>Erreur : {errorMessage}</div>;
+    }
+
+    // if (isError) return <div>Error: {error}</div>;
+    if (isLoading) return <div>Error: loading</div>;
+
     const handleChangeValue = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
         const target = event.target as HTMLInputElement;
         setUserData({
@@ -59,14 +69,14 @@ const Index = () => {
         updateUser(userData)
         setEdit(false)
     }
-    // console.log("user", data)
+
     return (
         <div className='profile'>
             {edit ? <>
                 <div className='flex space-between align-items-center'>
-                    <h2>Mon Profile</h2>
+                    <h2>Profile</h2>
                     <Button variant="outlined" sx={{ width: "75px", height: "25px", padding: "15px", fontSize: "12px", borderRadius: "18px" }} onClick={() => setEdit(!edit)}>
-                        Annuler
+                        Cancel
                     </Button>
                 </div>
                 <form onSubmit={handleSubmit}>

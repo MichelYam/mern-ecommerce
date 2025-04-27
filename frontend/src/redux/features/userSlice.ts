@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IUser } from '../api/api';
 import { RootState } from '../store';
+import { IUser, userApi } from '../api/userApi';
 
 interface IUserState {
-    userInfo: IUser | null;
-    userToken: string
+    user: IUser | null;
+    userToken: string | null
     isAuthenticated: boolean;
 }
 
 const initialState: IUserState = {
-    userInfo: null,
+    user: null,
     userToken: "",
     isAuthenticated: false,
 };
@@ -18,13 +18,32 @@ export const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        logout: () => initialState,
         setUser: (state, { payload }: PayloadAction<any>) => {
-            state.userInfo = payload.user;
-            state.userToken = payload.token
+            state.user = payload.user;
+            state.userToken = payload.token;
             state.isAuthenticated = true;
-        }
+        },
+        logout: (state) => {
+            state.user = null
+            state.userToken = null
+        },
+
     },
+    // extraReducers: (builder) => {
+    //     builder
+    //         .addMatcher(
+    //             userApi.endpoints.loginUser.matchFulfilled,
+    //             (state, { payload }) => {
+    //                 state.userInfo = payload.user;
+    //                 state.userToken = payload.token;
+    //                 state.isAuthenticated = true;
+    //             }
+    //         )
+    //         // .addMatcher(
+    //         //     userApi.endpoints.logoutUser.matchFulfilled, // Lorsque la requête de logout réussit
+    //         //     () => initialState // Réinitialiser l'état utilisateur
+    //         // );
+    // },
 });
 
 export default userSlice.reducer;

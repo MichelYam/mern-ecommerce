@@ -14,12 +14,15 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import { calculateCartTotal } from '../../utils/cart';
-import './style.css'
-import { useGetUserQuery } from '../../redux/api/api';
+import { useGetUserQuery } from '../../redux/api/userApi';
+// import { useGetUserQuery } from '../../redux/api/api';
 import { useAppSelector } from '../../redux/store';
 import { PayPalScriptProvider, PayPalButtons, ReactPayPalScriptOptions } from "@paypal/react-paypal-js";
 import axios from "axios"
 import Stripe from '../../components/Stripe';
+import './style.css'
+
+
 const style = {
     position: 'absolute' as 'absolute',
     top: '50%',

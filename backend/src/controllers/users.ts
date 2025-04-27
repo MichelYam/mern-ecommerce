@@ -1,25 +1,33 @@
 import { Handler, RequestHandler } from "express";
-import createHttpError from "http-errors";
+import { Request, Response } from "express";
 import User from "../models/user";
 import bcrypt from "bcrypt";
 import keys from "../config/keys";
 import jwt from "jsonwebtoken";
 import randomBytes from 'randombytes';
 import { sendEmail } from "../services/nodemailer";
+import Order from "../models/order";
+import mongoose from 'mongoose';
 
 const { secret, tokenLife } = keys.jwt;
 interface JwtPayload {
     id: string
 }
 
-export const getAuthenticatedUser: RequestHandler = async (req: any, res) => {
+export const getAuthenticatedUser = async (req: Request, res: Response) => {
     try {
-        const user = await User.findOne({ _id: req.user._id }).select("-password");
+        const jwtToken = (req.headers.authorization ?? "")
+            .split("Bearer")[1]
+            ?.trim();
+        const decodedJwtToken = jwt.decode(jwtToken);
+        if (!decodedJwtToken || typeof decodedJwtToken !== 'object' || !('id' in decodedJwtToken)) {
+            throw new Error("Invalid token!");
+        }
+        const user = await User.findOne({ _id: (decodedJwtToken as JwtPayload).id }).select("-password");
 
         if (!user) {
             throw new Error("User not found!");
         }
-
         res.status(200).json({
             success: true,
             user
@@ -38,7 +46,7 @@ interface SignUpBody {
     email?: string,
     password?: string,
 }
-export const signUp: RequestHandler<unknown, unknown, SignUpBody, unknown> = async (req, res, next) => {
+export const signUp = async (req: Request, res: Response) => {
     try {
         const { email, firstName, lastName, password } = req.body;
 
@@ -121,7 +129,7 @@ interface LoginBody {
     password?: string,
 }
 
-export const login: RequestHandler<unknown, unknown, LoginBody, unknown> = async (req, res, next) => {
+export const login = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
         if (!email) {
@@ -164,7 +172,12 @@ export const login: RequestHandler<unknown, unknown, LoginBody, unknown> = async
         if (!token) {
             throw new Error();
         }
-
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
         res.status(200).json({
             success: true,
             token: `Bearer ${token}`,
@@ -182,6 +195,11 @@ export const login: RequestHandler<unknown, unknown, LoginBody, unknown> = async
             error: 'Your request could not be processed. Please try again.'
         });
     }
+};
+
+export const logout = (req: Request, res: Response) => {
+    res.clearCookie('token');
+    res.status(200).send('Déconnexion réussie');
 };
 
 interface forgotBody {
@@ -292,6 +310,26 @@ export const updateUser: RequestHandler = async (req: any, res) => {
     } catch (error) {
         res.status(400).json({
             error: 'Your request could not be processed. Please try again.',
+        });
+    }
+};
+
+export const getOrders = async (req: any, res: Response) => {
+
+    try {
+        const userId = req.user.id;
+        const orders = await Order.find({ user: userId });
+
+        if (orders.length === 0) {
+            return res.status(404).json({ message: 'Aucune commande trouvée' });
+        }
+
+        res.status(200).json({
+            orders: orders
+        });
+    } catch (error) {
+        res.status(400).json({
+            error: 'Your request could not be processed. Please try again.'
         });
     }
 };

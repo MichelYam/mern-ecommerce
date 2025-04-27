@@ -3,23 +3,47 @@ const { Schema } = Mongoose;
 
 // Order Schema
 const OrderSchema = new Schema({
-  cart: {
-    type: Schema.Types.ObjectId,
-    ref: 'Cart'
-  },
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   },
-  total: {
+  // cart: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: 'Cart'
+  // },
+  items: [
+    {
+      itemId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true
+      },
+      quantity: {
+        type: Number,
+        required: true
+      },
+      price: {
+        type: Number,
+        required: true
+      }
+    }
+  ],
+  totalAmount: {
     type: Number,
-    default: 0
+    required: true
   },
-  updated: Date,
+  status: {
+    type: String,
+    enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+    default: 'Pending'
+  },
+  // updated: Date,
   created: {
     type: Date,
     default: Date.now
   }
 });
 
-module.exports = Mongoose.model('Order', OrderSchema);
+export default module.exports = Mongoose.model('Order', OrderSchema);
+

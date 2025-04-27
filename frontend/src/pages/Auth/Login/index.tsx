@@ -6,7 +6,8 @@ import { saveStorage } from '../../../utils/TokenStorage';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { useLoginUserMutation } from '../../../redux/api/api';
+// import { useLoginUserMutation } from '../../../redux/api/api';
+import { useLoginUserMutation } from '../../../redux/api/userApi';
 import { setUser } from '../../../redux/features/userSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { toast } from 'react-toastify';
@@ -32,11 +33,11 @@ const Index = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     loginUser(data)
-      .then((response) => {
-        // console.log("response", response);
-        if ('data' in response) {
+    .then((response) => {
+      if ('data' in response) {
           saveStorage(response.data.token, data.remember)
           dispatch(setUser(response.data as any))
+          navigate('/');
         } else {
           // response is of type '{ error: FetchBaseQueryError | SerializedError; }'
           console.log(response.error);
@@ -47,12 +48,12 @@ const Index = () => {
       });
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("User Login Successfully")
-      navigate(-1)
-    }
-  }, [isSuccess])
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     toast.success("User Login Successfully")
+  //     navigate(-1)
+  //   }
+  // }, [isSuccess])
 
   if (isAuthenticated) return <Navigate to="/" />;
 

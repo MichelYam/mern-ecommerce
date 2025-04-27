@@ -1,25 +1,27 @@
-import React, { useState } from 'react'
+import { ChangeEvent } from 'react'
 import "./style.css"
 
-const Index = () => {
-    const [count, setCount] = useState(1)
+interface Props {
+    value: number
+    onChange: (event: ChangeEvent<HTMLInputElement>) => void
+}
 
-    const handleQuantityAmount = (value: number) => {
-        console.log(value)
-        if (value < 1) {
-            setCount(1)
-        } else if (value > 50) {
-            setCount(50)
-        } else {
-            setCount(value)
-        }
+const Index = ({ value, onChange }: Props) => {
+
+    const handleDecrement = () => {
+        const event = { target: { value: (value - 1).toString() } } as ChangeEvent<HTMLInputElement>;
+        onChange(event);
     }
 
+    const handleIncrement = () => {
+        const event = { target: { value: (value + 1).toString() } } as ChangeEvent<HTMLInputElement>;
+        onChange(event);
+    }
     return (
         <span className="input-wrapper">
-            <button id="decrement" onClick={() => setCount(count - 1)}>-</button>
-            <input type="number" value={count} id="quantity" onChange={(e) => handleQuantityAmount(Number(e.target.value))} />
-            <button id="increment" onClick={() => setCount(count + 1)}>+</button>
+            <button id="decrement" onClick={handleDecrement}>-</button>
+            <input type="number" value={value} id="quantity" onChange={onChange} />
+            <button id="increment" onClick={handleIncrement}>+</button>
         </span>
     )
 }

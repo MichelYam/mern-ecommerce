@@ -2,7 +2,7 @@ import React from 'react'
 import './style.css'
 
 import CloseIcon from '@mui/icons-material/Close';
-import { IProduct } from '../../redux/api/api';
+import { IProduct } from '../../redux/api/productApi';
 
 const Index = ({ _id, imageUrl, name, price, quantity }: IProduct) => {
     // // Handle Remove item From Cart
