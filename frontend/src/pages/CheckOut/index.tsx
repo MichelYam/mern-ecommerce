@@ -107,7 +107,7 @@ const Index = () => {
                     </div>
                     <div className='checkout-delivery-information'>
                         <p>Name:</p>
-                        <p>{user.firstName} {user.lastName}</p>
+                        <p>{user.name.split(' ')[1]} {user.name.split(' ')[0]}</p>
                     </div>
                     <div className='checkout-delivery-information'>
                         <p>Address:</p>

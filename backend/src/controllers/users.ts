@@ -40,16 +40,15 @@ export const getAuthenticatedUser = async (req: Request, res: Response) => {
 };
 
 interface SignUpBody {
-    username?: string,
-    firstName?: string,
-    lastName?: string,
-    email?: string,
-    password?: string,
+    name: string,
+    email: string,
+    password: string,
 }
 export const signUp = async (req: Request, res: Response) => {
+    const { email, name, password } = req.body;
+    const firstName = name.split(" ")[0];
+    const lastName = name.split(" ")[1];
     try {
-        const { email, firstName, lastName, password } = req.body;
-
         if (!email) {
             return res.status(400).json({ error: 'You must enter an email address.' });
         }
@@ -80,10 +79,9 @@ export const signUp = async (req: Request, res: Response) => {
         // }
 
         const user = new User({
+            name,
             email,
             password,
-            firstName,
-            lastName
         });
 
         const salt = await bcrypt.genSalt(10);
@@ -111,8 +109,7 @@ export const signUp = async (req: Request, res: Response) => {
             token: `Bearer ${token}`,
             user: {
                 id: registeredUser.id,
-                firstName: registeredUser.firstName,
-                lastName: registeredUser.lastName,
+                name: registeredUser.name,
                 email: registeredUser.email,
                 role: registeredUser.role
             }
@@ -183,8 +180,7 @@ export const login = async (req: Request, res: Response) => {
             token: `Bearer ${token}`,
             user: {
                 id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
+                name: user.name,
                 email: user.email,
                 role: user.role
             }

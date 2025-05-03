@@ -1,14 +1,14 @@
-import { CardElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { PaymentMethod, StripeError } from '@stripe/stripe-js';
+import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+// import { PaymentMethod, StripeError } from '@stripe/stripe-js';
 import { useState } from 'react';
-import { useAppSelector } from '../../redux/store';
+
 // import { useGetUserQuery } from '../../redux/api/api';
 import { useGetUserQuery } from '../../redux/api/userApi';
 
-interface IPaymentMethod {
-    error?: StripeError | undefined;
-    paymentMethod?: PaymentMethod | undefined;
-}
+// interface IPaymentMethod {
+//     error?: StripeError | undefined;
+//     paymentMethod?: PaymentMethod | undefined;
+// }
 
 const CheckoutForm = () => {
     const stripe = useStripe()
@@ -105,7 +105,7 @@ const CheckoutForm = () => {
                 return_url: 'http://localhost:3000/thankyou/',
                 payment_method_data: {
                     billing_details: {
-                        name: `${user?.firstName} ${user?.lastName} `,
+                        name: `${user?.name.split(' ')[1]} ${user?.name.split(' ')[0]} `,
                         email: user?.email,
                         phone: '7873679090',
                         address: {

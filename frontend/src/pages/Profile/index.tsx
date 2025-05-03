@@ -16,11 +16,11 @@ const Index = () => {
 
     const { data: user, isLoading, isError, error } = useGetUserQuery("")
     const [updateUser] = useUpdateUserMutation()
-    const [edit, setEdit] = useState(false)
+    const [editMode, setEditMode] = useState(false)
 
     const [userData, setUserData] = useState({
-        firstName: "",
-        lastName: "",
+        firstName: '',
+        lastName: '',
         email: "",
         avatar: "",
         role: "",
@@ -30,31 +30,21 @@ const Index = () => {
         zipCode: "",
     })
     useEffect(() => {
-        // console.log("user", user)
+        const [firstName = '', lastName = ''] = user?.name?.split(' ') ?? [];
         if (user) {
             setUserData({
-                firstName: user.firstName || "",
-                lastName: user.lastName || "",
-                email: user.email || "",
-                avatar: user.avatar || "",
-                role: user.role || "",
-                city: user.city || "",
-                phone: user.phone || "",
-                country: user.country || "",
-                zipCode: user.zipCode || "",
+                firstName,
+                lastName,
+                email: user.email || '',
+                avatar: user.avatar || '',
+                role: user.role || '',
+                city: user.city || '',
+                phone: user.phone || '',
+                country: user.country || '',
+                zipCode: user.zipCode || '',
             });
         }
     }, [user]);
-
-    if (!isAuthenticated) return <Navigate to="/" />;
-
-    if (isError) {
-        const errorMessage = (error as any)?.data?.message || 'Unable to retrieve user information';
-        return <div>Erreur : {errorMessage}</div>;
-    }
-
-    // if (isError) return <div>Error: {error}</div>;
-    if (isLoading) return <div>Error: loading</div>;
 
     const handleChangeValue = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
         const target = event.target as HTMLInputElement;
@@ -66,16 +56,29 @@ const Index = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        updateUser(userData)
-        setEdit(false)
+        const updatedUser = {
+            ...userData,
+            name: `${userData.firstName} ${userData.lastName}`.trim(),
+        };
+        updateUser(updatedUser)
+        setEditMode(false)
     }
 
+    if (!isAuthenticated) return <Navigate to="/" />;
+    if (isLoading) return <div>Chargement...</div>;
+    if (isError) return <div>Erreur : {(error as any)?.data?.message || 'Impossible de récupérer les infos'}</div>;
+
+    const renderTextField = (id: string, label: string, value: string) => (
+        <FormControl fullWidth className='profile-controle'>
+            <TextField id={id} label={label} variant="outlined" value={value} onChange={handleChangeValue} />
+        </FormControl>
+    );
     return (
         <div className='profile'>
-            {edit ? <>
+            {editMode ? <>
                 <div className='flex space-between align-items-center'>
                     <h2>Profile</h2>
-                    <Button variant="outlined" sx={{ width: "75px", height: "25px", padding: "15px", fontSize: "12px", borderRadius: "18px" }} onClick={() => setEdit(!edit)}>
+                    <Button variant="outlined" sx={{ width: "75px", height: "25px", padding: "15px", fontSize: "12px", borderRadius: "18px" }} onClick={() => setEditMode(!editMode)}>
                         Cancel
                     </Button>
                 </div>
@@ -94,26 +97,18 @@ const Index = () => {
                             </div>
                             <div className='flex'>
                                 <div className='profile-controle width-half'>
-                                    <FormControl>
-                                        <TextField id="lastName" label="Last Name" variant="outlined" value={userData.lastName} onChange={handleChangeValue} />
-                                    </FormControl>
+                                    {renderTextField('lastName', 'Nom', userData.lastName)}
                                 </div>
                                 <div className='profile-controle width-half'>
-                                    <FormControl>
-                                        <TextField id="firstName" label="First Name" variant="outlined" value={userData.firstName} onChange={handleChangeValue} />
-                                    </FormControl>
+                                    {renderTextField('firstName', 'Prénom', userData.firstName)}
                                 </div>
                             </div>
                             <div className='flex'>
                                 <div className='profile-controle width-half'>
-                                    <FormControl>
-                                        <TextField id="email" label="Email" variant="outlined" value={userData.email} onChange={handleChangeValue} />
-                                    </FormControl>
+                                    {renderTextField('email', 'Email', userData.email)}
                                 </div>
                                 <div className='profile-controle width-half'>
-                                    <FormControl>
-                                        <TextField id="phone" label="Phone" variant="outlined" value={userData.phone} onChange={handleChangeValue} />
-                                    </FormControl>
+                                    {renderTextField('phone', 'Téléphone', userData.phone)}
                                 </div>
                             </div>
                             {/* <div className='flex'>
@@ -137,27 +132,21 @@ const Index = () => {
                             </div>
                             <div className='flex'>
                                 <div className='profile-controle width-half'>
-                                    <FormControl>
-                                        <TextField id="country" label="Country" variant="outlined" value={userData.country} onChange={handleChangeValue} />
-                                    </FormControl>
+                                    {renderTextField('country', 'Pays', userData.country)}
                                 </div>
                                 <div className='profile-controle width-half'>
-                                    <FormControl>
-                                        <TextField id="city" label="City" variant="outlined" value={userData.city} onChange={handleChangeValue} />
-                                    </FormControl>
+                                    {renderTextField('city', 'Ville', userData.city)}
                                 </div>
                             </div>
                             <div className='flex'>
                                 <div className='profile-controle width-half'>
-                                    <FormControl>
-                                        <TextField id="zipCode" label="Zip Code" variant="outlined" value={userData.zipCode} onChange={handleChangeValue} />
-                                    </FormControl>
+                                    {renderTextField('zipCode', 'Code postal', userData.zipCode)}
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className='flex space-between'>
-                        <Button variant="outlined" color="error" onClick={() => setEdit(!edit)}>
+                        <Button variant="outlined" color="error" onClick={() => setEditMode(!editMode)}>
                             Cancel
                         </Button>
                         <Button variant="contained" type='submit'>
@@ -169,7 +158,7 @@ const Index = () => {
                 <>
                     <div className='flex space-between align-items-center'>
                         <h2>Mon Profile</h2>
-                        <Button variant="outlined" sx={{ width: "75px", height: "25px", padding: "15px", fontSize: "12px", borderRadius: "18px" }} onClick={() => setEdit(!edit)}>
+                        <Button variant="outlined" sx={{ width: "75px", height: "25px", padding: "15px", fontSize: "12px", borderRadius: "18px" }} onClick={() => setEditMode(!editMode)}>
                             Edit
                             <FiEdit style={{ fontSize: "20px", marginLeft: "5px" }} />
                         </Button>
@@ -184,7 +173,7 @@ const Index = () => {
                                         <Avatar src={`../assets/uploads/${userData?.avatar}`} sx={{ height: '70px', width: '70px' }} />
                                 }
                                 <div className='flex flex-direction-column'>
-                                    <p>{[userData?.firstName, userData?.lastName].join(" ")}</p>
+                                    <p>{[userData?.firstName, userData?.lastName].join(' ')}</p>
                                     <p>{userData?.role}</p>
                                     <p>Paris, France</p>
                                 </div>
@@ -199,11 +188,11 @@ const Index = () => {
                             <div className='flex'>
                                 <div className='profile-controle width-half'>
                                     <p>Last Name</p>
-                                    <p>{userData?.lastName}</p>
+                                    <p>{userData.lastName}</p>
                                 </div>
                                 <div className='profile-controle width-half'>
                                     <p>First Name</p>
-                                    <p>{userData?.firstName}</p>
+                                    <p>{userData.firstName}</p>
                                 </div>
                             </div>
                             <div className='flex'>

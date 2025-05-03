@@ -2,13 +2,17 @@ import { InferSchemaType, Schema, model } from "mongoose";
 import { ROLES, EMAIL_PROVIDER } from '../constants';
 
 const userSchema = new Schema({
-    firstName: {
+    // firstName: {
+    //     type: String,
+    //     required: [true, "Your first name is required"],
+    // },
+    // lastName: {
+    //     type: String,
+    //     required: [true, "Your last name is required"],
+    // },
+    name: {
         type: String,
-        required: [true, "Your first name is required"],
-    },
-    lastName: {
-        type: String,
-        required: [true, "Your last name is required"],
+        required: [true, "Your name is required"],
     },
     avatar: {
         type: String,

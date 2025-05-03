@@ -1,13 +1,13 @@
+import { SiN26 } from "react-icons/si"
 import { getTokenFromLocalStorage } from "../../utils/TokenStorage"
 import { api } from "./api"
 
 export interface IUser {
-    id?: string | number
-    firstName?: string
-    lastName?: string
-    password?: string
-    email?: string
-    role?: string
+    id: string | number
+    name: string
+    password: string
+    email: string
+    role: string
     country?: string
     zipCode?: string
     phone?: string
@@ -56,14 +56,20 @@ export const userApi = api.injectEndpoints({
     //     },
     // }),
     endpoints: (builder) => ({
-        loginUser: builder.mutation<LoginResponse, LoginCredentials>({
+        login: builder.mutation<LoginResponse, LoginCredentials>({
             query: ({ email, password }) => ({
                 url: 'user/login',
                 method: 'POST',
                 body: { email, password }
             }),
         }),
-
+        signup: builder.mutation<IUser, Partial<IUser>>({
+            query: (user) => ({
+                url: 'user/signup',
+                method: 'POST',
+                body: user,
+            })
+        }),
         getUsers: builder.query<IUser[], void>({
             query: () => 'user',
         }),
@@ -85,7 +91,7 @@ export const userApi = api.injectEndpoints({
                 } catch (error) {
                     if (meta.response.status === 401) {
                         console.error("Token invalide ou expiré. L'utilisateur doit se reconnecter.");
-                        return {}; 
+                        return {};
                     }
                     console.log('Réponse API:', response);
                     console.error("Erreur dans transformResponse:", error);
@@ -151,7 +157,7 @@ export const userApi = api.injectEndpoints({
                 } catch (error) {
                     if (meta.response.status === 401) {
                         console.error("Token invalide ou expiré. L'utilisateur doit se reconnecter.");
-                        return {}; 
+                        return {};
                     }
                     console.log('Réponse API:', response);
                     console.error("Erreur dans transformResponse:", error);
@@ -165,7 +171,8 @@ export const userApi = api.injectEndpoints({
 
 
 export const {
-    useLoginUserMutation,
+    useLoginMutation,
+    useSignupMutation,
     useGetUsersQuery,
     useGetOrdersQuery,
     useGetUserQuery,

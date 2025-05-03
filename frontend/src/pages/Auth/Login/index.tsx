@@ -7,7 +7,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 // import { useLoginUserMutation } from '../../../redux/api/api';
-import { useLoginUserMutation } from '../../../redux/api/userApi';
+import { useLoginMutation } from '../../../redux/api/userApi';
 import { setUser } from '../../../redux/features/userSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { toast } from 'react-toastify';
@@ -18,7 +18,7 @@ const Index = () => {
     password: "",
     remember: false
   })
-  const [loginUser, { isLoading, isSuccess, isError, error }] = useLoginUserMutation()
+  const [loginUser, { isLoading, isSuccess, isError, error }] = useLoginMutation()
   const dispatch = useAppDispatch();
   const navigate = useNavigate()
   const {isAuthenticated} = useAppSelector((state) => state.user);
