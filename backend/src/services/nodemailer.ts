@@ -11,7 +11,7 @@ export const sendEmail = async (email: any, type: any, host?: any, data?: any) =
     const message: any = prepareTemplate(type, host, data);
 
     const transporter = nodemailer.createTransport({
-      host: "smtp-mail.outlook.com",
+      host: "smtp.gmail.com",
       port: 587,
       secure: false,
       auth: {

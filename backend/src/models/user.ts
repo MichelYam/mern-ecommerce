@@ -61,7 +61,7 @@ const userSchema = new Schema({
 
     },
     resetPasswordExpires: {
-        type: Number,
+        type: Date,
         select: false
     },
     updated: Date,
@@ -69,6 +69,12 @@ const userSchema = new Schema({
         type: Date,
         default: new Date(),
     },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
+    verificationToken: String,
+    verificationTokenExpiresAt: Date,
 })
 
 

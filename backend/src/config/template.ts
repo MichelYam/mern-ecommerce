@@ -1,3 +1,15 @@
+export const activeAccountEmail = (host: any, verifyToken: any) => {
+  const message = {
+    subject: 'Verify your email',
+    text:
+      `${'To activate your account, click on the link below.\n' +
+      'http://'}${host}/verify/${verifyToken}\n\n` +
+      `If you did not request this, please ignore this email and your account will remain inactive.\n` +
+      `see you soon`
+  };
+  return message;
+}
+
 export const resetEmail = (host: any, resetToken: any) => {
   const message = {
     subject: 'Reset Password',

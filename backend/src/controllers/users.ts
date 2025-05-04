@@ -7,7 +7,6 @@ import jwt from "jsonwebtoken";
 import randomBytes from 'randombytes';
 import { sendEmail } from "../services/nodemailer";
 import Order from "../models/order";
-import mongoose from 'mongoose';
 
 const { secret, tokenLife } = keys.jwt;
 interface JwtPayload {
@@ -61,12 +60,10 @@ export const signUp = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'You must enter a password.' });
         }
 
-        const existingUser = await User.findOne({ email });
+        const userExists = await User.findOne({ email });
 
-        if (existingUser) {
-            return res
-                .status(400)
-                .json({ error: 'That email address is already in use.' });
+        if (userExists) {
+            return res.status(400).json({ error: 'That email address is already in use.' });
         }
 
         // let subscribed = false;
@@ -77,29 +74,26 @@ export const signUp = async (req: Request, res: Response) => {
         //         subscribed = true;
         //     }
         // }
-
+        const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
         const user = new User({
             name,
             email,
             password,
+            verificationToken,
+            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
         });
 
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(user.password, salt);
 
         user.password = hash;
+
         const registeredUser = await user.save();
 
         const payload = {
             id: registeredUser.id
         };
-
-        // await mailgun.sendEmail(
-        //     registeredUser.email,
-        //     'signup',
-        //     null,
-        //     registeredUser
-        // );
+        await sendEmail(user.email,'active-account', req.headers.host);
 
         const token = jwt.sign(payload, secret as string, { expiresIn: tokenLife });
 
@@ -120,7 +114,40 @@ export const signUp = async (req: Request, res: Response) => {
         });
     }
 };
+export const verifyEmail = async (req: Request, res: Response) => {
+    const { code } = req.body;
+    try {
+        const user = await User.findOne({
+            verificationToken: code,
+            verificationTokenExpiresAt: { $gt: Date.now() },
+        });
 
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
+        }
+
+        user.isVerified = true;
+        user.verificationToken = undefined;
+        user.verificationTokenExpiresAt = undefined;
+        await user.save();
+
+        await sendEmail(user.email, user.name);
+
+        res.status(200).json({
+            success: true,
+            message: "Email verified successfully",
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            },
+        });
+    } catch (error) {
+        console.log("error in verifyEmail ", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
 interface LoginBody {
     email?: string,
     password?: string,
@@ -223,8 +250,10 @@ export const forgot: RequestHandler<unknown, unknown, forgotBody, unknown> = asy
         const buffer = randomBytes(48);
         const resetToken = buffer.toString('hex');
 
+
+
         existingUser.resetPasswordToken = resetToken;
-        existingUser.resetPasswordExpires = Date.now() + 3600000;
+        existingUser.resetPasswordExpires = new Date(Date.now() + 3600000);
 
         existingUser.save();
         // console.log(req.headers)
